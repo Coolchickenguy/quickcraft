@@ -44,12 +44,6 @@ install_python3() {
 if command -v python3 > /dev/null 2>&1 && command -v pip3 > /dev/null 2>&1; then
     echo "Python 3 and pip3 are already installed."
 else
-    # Check if the script is running as root (sudo)
-    if [ "$(id -u)" -ne 0 ]; then
-        echo "This script must be run as root or with sudo."
-        exit 1
-    fi
-
     # Run the installation function
     install_python3
 fi

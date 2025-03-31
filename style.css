@@ -124,3 +124,14 @@ body {
 h2 {
   color: var(--color-text-header);
 }
+
+ul {
+  list-style-type: none;
+  padding-left: 20px;  /* Optional for indentation */
+}
+
+/* Add a dash as the list marker */
+ul li::before {
+  content: "- ";
+  margin-right: 10px;  /* Optional for spacing between dash and text */
+}

@@ -22,6 +22,7 @@
 
     <!-- The website JavaScript file -->
     <script src="/script.js" defer></script>
+    <script type="module" src="highlight.mjs"></script>
   </head>
   <body>
     <!--
@@ -35,12 +36,56 @@
         <div class="instructions">
           <h2>Using this project</h2>
           <p>
-            This is a quick+easy minecraft launcher. It is cracked, choses your
+            This is a quick+easy to use minecraft launcher. It choses your
             username basicly randomly, but keeps it the same across all installs
             per-os-username (same os username=same minecraft username/same
-            minecraft uuid. [It makes a Sha1 hash of your os username for anyone curious.])
+            minecraft uuid. [It makes a Sha1 hash of your os username for anyone
+            curious.])
           </p>
-          <!--dl0-pre--><a href="/cdn/9f34fe876ca1e6122c4d7548a23d1f03.zip"
+          <h2>Os support</h2>
+          <ul>
+            <li>
+              Macos
+              <ul>
+                <li>
+                  Python3 must already be installed, do not run installer.sh,
+                  run start.sh to start/install minecraft's latest release.
+                </li>
+              </ul>
+            </li>
+            <li>
+              Linux
+              <ul>
+                <li>
+                  First, run installer.sh to install. Then run start.sh to
+                  start/install minecraft's latest release.
+                </li>
+                <li>
+                  installer.sh trys to install python3 with your package
+                  manager, (may ask for sudo) that is it.
+                </li>
+              </ul>
+            </li>
+            <li>
+              Windows
+              <ul>
+                <li>
+                  First, run installer.ps1 to install. Then run start.ps1 to
+                  start/install minecraft's latest release. If it says "this
+                  file may harm your computer," uncheck "ask me again about this
+                  file", and hit run. If it says scripts are not enabled on your
+                  system or a windows opens and closes out quickly, try opening
+                  a app called "powershell" and copy+pasing this command then hit enter: <code lang="powershell">Set-ExecutionPolicy -Scope CurrentUser unrestricted</code>
+                </li>
+                <li>
+                  installer.ps1 downloads python to a dir in the install
+                  directory called "python". Supports x64, x86, and arm64 (no
+                  arm32 4 u)
+                </li>
+              </ul>
+            </li>
+          </ul>
+          <!--dl0-pre--><a href="/cdn/b3f46a0248cfa7eda26c13000669ad3c.zip"
             >DOWNLOAD</a
           ><!--dl0-post-->
         </div>
