@@ -17,7 +17,7 @@ options = {
     "username": uname,
     "uuid": hash[0:6] + "-" + hash[6:10] + "-" + hash[10:14] + "-" + hash[14:18] + "-" + hash[18:30],
     "token": "nevergonagiveyouup",
-    "executablePath": os.path.abspath("./java/bin/java")
+    #"executablePath": os.path.abspath("./java/bin/java")
 }
 minecraft_command = minecraft_launcher_lib.command.get_minecraft_command(ver, minecraft_directory, options)
 
