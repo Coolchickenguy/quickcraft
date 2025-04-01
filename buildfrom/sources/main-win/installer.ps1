@@ -1,0 +1,1 @@
+./assets/installer.ps1

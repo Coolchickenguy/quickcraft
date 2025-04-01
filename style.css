@@ -133,5 +133,5 @@ ul {
 /* Add a dash as the list marker */
 ul li::before {
   content: "- ";
-  margin-right: 10px;  /* Optional for spacing between dash and text */
+  margin-right: 10px;
 }
