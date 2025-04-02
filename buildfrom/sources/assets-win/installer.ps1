@@ -7,11 +7,11 @@ $arch = $env:PROCESSOR_ARCHITECTURE
 $url = ""
 if ($arch -eq "x86") {
     $url = "https://www.python.org/ftp/python/3.13.2/python-3.13.2-embed-win32.zip"
-} else if ($arch -eq "AMD64"){
+} elseif ($arch -eq "AMD64"){
     $url = "https://www.python.org/ftp/python/3.13.2/python-3.13.2-embed-amd64.zip"
-} else if ($arch -eq "ARM"){
+} elseif ($arch -eq "ARM"){
     throw "Arch not supported (Fun fact: IT IS SO SLOW, JUST GET A NEW COMPUTER!)"
-} else if ($arch -eq "ARM64"){
+} elseif ($arch -eq "ARM64"){
     $url = "https://www.python.org/ftp/python/3.13.2/python-3.13.2-embed-arm64.zip"
 }
 
