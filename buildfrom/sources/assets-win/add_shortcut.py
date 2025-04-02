@@ -17,7 +17,7 @@ def create_shortcut(path, target, working_dir=None, arguments="", icon_location=
     shortcut.Targetpath = target
     shortcut.WorkingDirectory = working_dir if working_dir else os.path.dirname(target)
     shortcut.Arguments = arguments
-    if icon_location is not "":
+    if icon_location != "":
         shortcut.IconLocation = icon_location
     shortcut.save()
 
@@ -31,5 +31,5 @@ def get_desktop_path():
 if __name__ == '__main__':
     shortcut_path = os.path.join(get_desktop_path(),"quickcraft.lnk")
     target_path = "powershell"
-    create_shortcut(shortcut_path, target_path, working_dir=os.path.realpath("./"), arguments="-ExecutionPolicy Bypass -File ./start.ps1", icon_location=os.path.realpath("./logo.png"))
+    create_shortcut(shortcut_path, target_path, working_dir=os.path.realpath("./"), arguments="-ExecutionPolicy Bypass -File ./start.ps1", icon_location=os.path.realpath("./logo.ico"))
     print(f"Shortcut created at: {os.path.abspath(shortcut_path)}")
