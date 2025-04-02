@@ -1,2 +1,2 @@
 cd assets
-./assets/start.ps1
+./start.ps1

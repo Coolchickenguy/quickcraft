@@ -1,3 +1,3 @@
 #!/bin/sh
 cd assets
-./assets/installer.sh
+./installer.sh

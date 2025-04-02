@@ -1,2 +1,2 @@
 cd assets
-./assets/installer.ps1
+./installer.ps1
