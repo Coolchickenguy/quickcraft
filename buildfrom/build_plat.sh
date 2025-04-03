@@ -13,21 +13,27 @@ cp $shdir/sources/assets-all/* "$builddir/assets"
 if [ "$1" = "win" ]; then
     cp $shdir/sources/assets-win/* "$builddir/assets"
     cp $shdir/sources/main-win/* "$builddir"
+    buildzip="build/build-$platform.zip"
+    zip -q -r "$buildzip" "$builddir" 
+    echo "$buildzip"
 fi
+
 build_unix() {
     cp $shdir/sources/assets-unix/* "$builddir/assets"
     cp $shdir/sources/main-unix/* "$builddir"
+    buildtargz="build/build-$platform.tar.gz"
+    tar -czf "$buildtargz" "$builddir" 
+    echo "$buildtargz"
 }
+
 if [ "$1" = "linux" ]; then
-    build_unix
     cp $shdir/sources/assets-linux/* "$builddir/assets"
     cp $shdir/sources/main-linux/* "$builddir"
-fi
-if [ "$1" = "macos" ]; then
     build_unix
+fi
+
+if [ "$1" = "macos" ]; then
     #cp "$shdir/sources/assets-macos/*" "$builddir/assets" || true
     #cp "$shdir/sources/main-macos/*" "$builddir" || true
+    build_unix
 fi
-buildzip="build/build-$platform.zip"
-zip -q -r "$buildzip" "$builddir" 
-echo "$buildzip"

@@ -54,7 +54,7 @@ pip3 install minecraft_launcher_lib
 # Add desktop shortcut
 iconLocation=$(realpath ./logo.png)
 localpath=$(realpath ./)
-echo "Icon=$(realpath ./logo.png)" | tee -a "shortcut.desktop.from"
-echo "Exec=/bin/sh $(realpath ./start.sh)" | tee -a "shortcut.desktop.from"
-echo "Path=$localpath" | tee -a "shortcut.desktop.from"
+printf "\nIcon=$(realpath ./logo.png)" | tee -a "shortcut.desktop.from"
+printf "\nExec=/bin/sh $(realpath ./start.sh)" | tee -a "shortcut.desktop.from"
+printf "\nPath=$localpath" | tee -a "shortcut.desktop.from"
 sudo cp shortcut.desktop.from /usr/share/applications/quickcraft.desktop
