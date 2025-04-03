@@ -57,4 +57,4 @@ localpath=$(realpath ./)
 echo "Icon=$(realpath ./logo.png)" | tee -a "shortcut.desktop.from"
 echo "Exec=/bin/sh $(realpath ./start.sh)" | tee -a "shortcut.desktop.from"
 echo "Path=$localpath" | tee -a "shortcut.desktop.from"
-cp shortcut.desktop.from /usr/share/applications/quickcraft.desktop
+sudo cp shortcut.desktop.from /usr/share/applications/quickcraft.desktop
