@@ -1,0 +1,4 @@
+minecraft-launcher-lib ~= 7.1
+pyqt6 ~= 6.9.0 
+jpype1 ~= 1.5.2
+pywin32; sys_platform == "win32"

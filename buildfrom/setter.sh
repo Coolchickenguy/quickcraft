@@ -19,7 +19,7 @@ if [ ! -f "$file" ]; then
     exit 1
 fi
 
-# Regex-based html parsing works fine, not a bad idea at all
+# Regex-based html parsing works fine, not a bad idea at all :)
 # Don't know why I added macos support to this part of the build system
 # Handle in-place editing with proper compatibility
 if echo "$OSTYPE" | grep -q 'darwin'; then

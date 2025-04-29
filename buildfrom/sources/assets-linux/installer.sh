@@ -12,7 +12,7 @@ install_python3() {
     if command -v apt-get > /dev/null 2>&1; then
         # For Debian-based distributions (Ubuntu, Debian, etc.)
         sudo apt-get update
-        sudo apt-get install -y python3 python3-pip
+        sudo apt-get install -y python3 python3-pip python3.10-venv
         
     elif command -v dnf > /dev/null 2>&1; then
         # For Red Hat-based distributions (Fedora, CentOS, RHEL)
@@ -48,8 +48,17 @@ else
     install_python3
 fi
 
+# Make venv
+python3 -m venv .venv
+
+if command -v source > /dev/null 2>&1; then
+  source ./.venv/bin/activate
+else
+  . ./.venv/bin/activate
+fi
+
 # Done installing python
-pip3 install minecraft_launcher_lib
+pip3 install -r requirements.txt
 
 # Add desktop shortcut
 iconLocation=$(realpath ./logo.png)

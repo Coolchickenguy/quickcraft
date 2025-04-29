@@ -1,0 +1,4 @@
+node_modules
+mapped.json
+reset.sh
+__pycache__

@@ -3,10 +3,30 @@ const handleNode = async (node) => {
   // Handle the newly created node
   console.log("Node created:", node);
   if (node.nodeName === "CODE") {
+    let lang =
+      node.getAttribute("lang");
+    if (!lang){
+      const index = Array.from(node.classList).findIndex((value) =>
+        value.startsWith("language-")
+      )
+      if (index == -1){
+        console.log("Code has no language", Array.from(node.classList))
+        return
+      }else{
+        lang =       node.classList[
+          Array.from(node.classList).findIndex((value) =>
+            value.startsWith("language-")
+          )
+        ].slice("language-".length);
+      }
+    }
+
     node.innerHTML = await codeToHtml(node.innerText, {
-      lang: node.getAttribute("lang"),
+      lang,
       theme: "github-dark",
     });
+  } else {
+    Array.prototype.forEach.call(node.childNodes,handleNode);
   }
 };
 Array.from(document.getElementsByTagName("code")).forEach(handleNode);

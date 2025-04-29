@@ -1,0 +1,11 @@
+{
+  "releases": [
+    {
+      "version": "2.0.0",
+      "win": "/cdn/3d6dfb78ec4aafd3f1d1fce0aeb87c3a.zip",
+      "linux": "/cdn/cf385a322a3a50da7825e7552c4db70b.tar.gz",
+      "macos": "/cdn/4ae262764360b025a8f7efcff0a48733.tar.gz",
+      "channel": "stable"
+    }
+  ]
+}

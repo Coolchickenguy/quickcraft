@@ -19,8 +19,7 @@ Invoke-WebRequest -OutFile ./temp/python.zip $url
 Expand-Archive temp/python.zip -DestinationPath python
 
 ./python/python ./get-pip.py
-Add-Content -Path ./python/python*._pth -Value 'import site'
-./python/python -m pip install minecraft_launcher_lib
-./python/python -m pip install pywin32
+Add-Content -Path ./python/python*._pth -Value "import site`n../`n../preserve/updates"
+./python/python -m pip install -r requirements.txt
 ./python/python ./add_shortcut.py
 Remove-Item temp -Force -Recurse -ErrorAction SilentlyContinue

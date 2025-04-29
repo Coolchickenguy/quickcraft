@@ -1,0 +1,11 @@
+{
+  "name": "nabla",
+  "version": "1.0.0",
+  "description": "A nabla png renderer via pupeteer",
+  "main": "index.js",
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "puppeteer": "^24.6.1"
+  }
+}

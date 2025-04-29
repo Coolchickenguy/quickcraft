@@ -130,8 +130,60 @@ ul {
   padding-left: 20px;  /* Optional for indentation */
 }
 
-/* Add a dash as the list marker */
+/*ul li {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5em;
+  font-family: HK Grotesk;
+}
+
 ul li::before {
-  content: "- ";
-  margin-right: 10px;
+  content: "-";
+  width: 1em;
+  text-align: right;
+  flex-shrink: 0;
+  font-family: HK Grotesk;
+}*/
+ul li::before {
+  content: "-";
+  font-family: HK Grotesk;
+}
+/*Archive*/
+.archive {
+  list-style-type: none;
+  /*text-align: center;*/
+  transform: rotate(180deg);
+}
+.archive>li{
+  transform: rotate(-180deg);
+}
+.archive>li::before {
+  font-family: HK Grotesk;
+  font-size: 50px;
+  content: attr(version);
+}
+.archive>li>ul::before {
+  content: "";
+  display: block;
+  height: 2px;
+  background-color: #000;
+  --expand: 7vw;
+  width: calc(100% + var(--expand));
+  /*Honestly don't know why a +0.5*var(--expand) offset happens, but this fixes it by going in the opposite direction*/
+  transform: translate(calc(var(--expand) * -0.5));
+  margin-bottom: 1vh;
+}
+/*Mirrored for ease of reading. TODO:add option to go back to oldest-first order*/
+.archive>li:not(:first-child)::after {
+  content: "";
+  display: block;
+  height: 2px;
+  background-color: #000;
+  --expand: 45vw;
+  width: calc(100% + var(--expand));
+  /*Honestly don't know why a +0.5*var(--expand) offset happens, but this fixes it by going in the opposite direction*/
+  transform: translate(calc(var(--expand) * -0.5));
+}
+.archive>li>ul {
+  font-family: HK Grotesk;
 }
