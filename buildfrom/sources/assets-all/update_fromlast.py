@@ -52,6 +52,5 @@ def copytree_merge(src:str, dst:str, overwrite_files: bool = True):
 
 rm_allbut(parent_assets_root,["python",".venv","update_temp"])
 rm_allbut(os.path.dirname(parent_assets_root),["assets"])
-print(os.path.dirname(assets_root))
 copytree_merge(os.path.dirname(assets_root),os.path.dirname(parent_assets_root))
 shutil.rmtree(assets_root)

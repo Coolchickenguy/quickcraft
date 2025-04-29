@@ -55,7 +55,7 @@ class start:
             hooksClass.addListener(jpype.JString("onWindowCreated"),OnWindowOpen())
             #self.bdcpmInstance.proxyOtherSideFunction("hide",False)()
         except Exception as e:
-            print(e.with_traceback())
+            print(e)
     def closeGuiLoadingWindow(self):
         self.bdcpmInstance.set("minecraftOpened",True)
     def __init__(self,gui,onMcClose):

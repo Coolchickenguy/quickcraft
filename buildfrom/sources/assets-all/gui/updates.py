@@ -41,7 +41,7 @@ class Window(QWidget):
             import io
             with tarfile.open(fileobj=io.BytesIO(updateDlRequest.content),mode="r:gz") as tarObj:
                 tarObj.extractall(path=tmpPath)
-        print("Extraced")
+        print("Extraced update")
         p = subprocess.Popen([sys.executable,os.path.join(tmpPath,"assets","update_fromlast.py"),assets_root,release_manifest["version"],latest],stdout=sys.stdout,stderr=sys.stderr)
         p.wait()
         while True:
@@ -49,14 +49,13 @@ class Window(QWidget):
                 shutil.rmtree(tmpPath)
                 break
             except Exception as e:
-                print("Could not delete update temp")
+                print("Could not delete update temp. Retrying")
                 print(e)
-        print("Done")
+        print("Done update")
         #self.bdcpmInstance.proxyOtherSideFunction("safeClose",False)()
         self.safeClose()
 
     def safeClose(self):
-        print("safeClose")
         self.allowClose = True
         QTimer.singleShot(0, self.close)
 
@@ -89,11 +88,9 @@ class Window(QWidget):
             self.safeClose()
         def compareVersions(versions:list[str]):
             split = list(map(lambda version: list(map(lambda seg: int(seg),version.split("."))),versions))
-            print(split)
             leaders=[split]
             for i in range(0,3):
                 top=max(map(lambda a:a[i],leaders[0]))
-                print(top)
                 leaders[0] = list(filter(lambda a:a[i] == top,leaders[0]))
             return ".".join(list(map(lambda seg: str(seg),leaders[0][0])))
         latest=compareVersions(list(map(lambda x: x["version"],list(filter(lambda x: x["channel"] == release_manifest["channel"], res["releases"])))))
@@ -120,7 +117,6 @@ class Window(QWidget):
 
 
     def closeEvent(self, event):
-        print(self.allowClose)
         if self.allowClose:
             #if self.bdcpmInstance is not None:
             #    self.bdcpmInstance.stopped = True

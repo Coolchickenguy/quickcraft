@@ -43,32 +43,7 @@ class Window(QWidget):
 
     def __init__(self):
         super().__init__()
-        
-        def get_caller_info():
-            """
-            Retrieves information about the caller function.
 
-            Args:
-                skip (int): The number of stack frames to skip (1 for the immediate caller, 2 for the caller of the caller, etc.).
-
-            Returns:
-                tuple: A tuple containing the filename, function name, and arguments of the caller.
-                       Returns None if the stack depth is insufficient.
-            """
-            import inspect
-            import os
-            stack = inspect.stack()
-            def process(caller_frame:inspect.FrameInfo):
-                def inner(x):
-                    caller_filename = os.path.basename(x.f_code.co_filename)
-                    caller_function_name = x.f_code.co_name
-                    caller_arguments = x.f_locals
-
-                    return caller_filename, caller_function_name, caller_arguments
-                return inner(caller_frame[0])
-            return list(map(process,stack))
-
-        print(get_caller_info())
         self.resize(600, 300)
         version=release_manifest["version"]
         print("Starting quickcraft " + version)
