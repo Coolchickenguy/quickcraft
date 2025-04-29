@@ -6,6 +6,13 @@
       "linux": "/cdn/cf385a322a3a50da7825e7552c4db70b.tar.gz",
       "macos": "/cdn/4ae262764360b025a8f7efcff0a48733.tar.gz",
       "channel": "stable"
+    },
+    {
+      "version": "2.0.1",
+      "win": "/cdn/9e5dca0f74e26209315ca0b1821be553.zip",
+      "linux": "/cdn/b9c876ae542fa528f3607b7a48ffd2ae.tar.gz",
+      "macos": "/cdn/7e1a50fd01bcd911647785e04ed9e03c.tar.gz",
+      "channel": "stable"
     }
   ]
 }

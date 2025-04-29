@@ -101,7 +101,7 @@ class Window(QWidget):
             reply = QMessageBox.question(
                 self,
                 "Update Confirmation",
-                f"Do you want to update from {release_manifest["version"]} to newer version {latest}",
+                f"Do you want to update from {release_manifest['version']} to newer version {latest}",
                 QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
                 QMessageBox.StandardButton.Yes,
             )
