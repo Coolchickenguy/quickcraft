@@ -63,7 +63,6 @@ class start:
         self.bdcpmInstance = common.TaskManager.bidirectionalCrossProcessControlManager()
 
         self.startProcessUuid = common.TaskManager.startTask(multiprocessing.Process(target=self.start),"minecraft",install.qtThreadOrProcessMon)
-        print(common.TaskManager._groups)
         common.TaskManager.onStart(self.startProcessUuid,lambda uuid: self.bdcpmInstance.handleCalls(gui))
         common.TaskManager.onEnd(self.startProcessUuid,lambda uuid: onMcClose())
 

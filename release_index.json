@@ -20,6 +20,13 @@
       "linux": "/cdn/7e1555d74959b6389061a331f6a84495.tar.gz",
       "macos": "/cdn/d42bae127d59edd464f22af25d353bd3.tar.gz",
       "channel": "stable"
+    },
+    {
+      "version": "2.0.3",
+      "win": "/cdn/983e49aedd44927c6d1a0853d36bb6fc.zip",
+      "linux": "/cdn/49b04d7a2c9eafc71a22a22d3585bbeb.tar.gz",
+      "macos": "/cdn/3aa2f1a966626f70717c5b4381d214b8.tar.gz",
+      "channel": "stable"
     }
   ]
 }
