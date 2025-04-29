@@ -1,3 +1,5 @@
+#!/bin/sh
+
 # Check if the script has received three arguments
 if [ "$#" -ne 2 ]; then
     echo "Usage: $0 <win/linux/macos> <manifest>"

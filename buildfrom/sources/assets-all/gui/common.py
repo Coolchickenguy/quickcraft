@@ -1,8 +1,8 @@
 from multiprocessing.connection import Connection
 from typing import Any
-from PyQt6.QtWidgets import QApplication, QLabel
+from PyQt6.QtWidgets import QApplication, QLabel, QSizePolicy
 from PyQt6.QtGui import QFontDatabase, QPixmap, QPalette, QBrush, QIcon
-from PyQt6.QtCore import Qt
+from PyQt6.QtCore import Qt, QSize
 import sys
 import multiprocessing
 import threading
@@ -35,13 +35,58 @@ def initBackround(self):
     palette.setBrush(QPalette.ColorRole.Window, QBrush(scaled))
     self.setPalette(palette)
     self.setAutoFillBackground(True)
+    
+class ResizablePixmapLabel(QLabel):
+    def __init__(self, pixmap=None):
+        super().__init__()
+        self._pixmap = None
+        self.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
+        self.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
+        if pixmap:
+            self.setPixmap(pixmap)
+
+    def setPixmap(self, pixmap: QPixmap):
+        self._pixmap = pixmap
+        self.updatePixmap()
+
+    def resizeEvent(self, event):
+        super().resizeEvent(event)
+        self.updatePixmap()
+
+    def updatePixmap(self):
+        if not self._pixmap:
+            return
+
+        label_size = self.size()
+        pixmap_size = self._pixmap.size()
+
+        # Calculate scaling ratio
+        width_ratio = label_size.width() / pixmap_size.width()
+        height_ratio = label_size.height() / pixmap_size.height()
+        scale_ratio = min(width_ratio, height_ratio)
+
+        new_size = QSize(
+            int(pixmap_size.width() * scale_ratio),
+            int(pixmap_size.height() * scale_ratio)
+        )
+
+        scaled_pixmap = self._pixmap.scaled(
+            new_size,
+            Qt.AspectRatioMode.KeepAspectRatio,
+            Qt.TransformationMode.SmoothTransformation
+        )
+        super().setPixmap(scaled_pixmap)
+    
+    def minimumSizeHint(self):
+        return QSize(0, 0)  # Let the window shrink freely
+
+
 def initLogo(self,layout):
     pixmap = QPixmap(os.path.join(assets_root,"logo_full.png"))
-    label = QLabel()
-    label.setPixmap(pixmap.scaled(600,300))
-    #label.setPixmap(pixmap)
-    #self.resize(pixmap.width(), pixmap.height())
-    layout.addWidget(label,alignment=Qt.AlignmentFlag.AlignCenter)
+    label =  ResizablePixmapLabel(pixmap)
+    label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+    layout.addWidget(label)
 
 winmanInstanceCount = [0]
 

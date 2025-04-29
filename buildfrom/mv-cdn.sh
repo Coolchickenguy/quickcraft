@@ -1,3 +1,5 @@
+#!/bin/sh
+
 echo "Moving $1 to cdn" >&2
 
 sum=$(cat $1 | md5sum | cut -d' ' -f1)
