@@ -1,8 +1,7 @@
 <img src="buildfrom/sources/assets-all/logo_full.png">
 
 ## TODOS:
-- Fix release archive
-- Fix account support (Microsoft makes it SO HARD)
+- None
 
 ## Docs
 
@@ -54,9 +53,15 @@ Contains an assets directory with the icons/most source code.
 ###### Direct dependencies
 
 - Python3 (auto installed localy on windows, installed via package manager on linux, required to be already installed on macOS)
-- minecraft_launcher_lib (Auto installed)
-- pyqt6 (Auto installed)
-- jpype (Auto installed)
+- The following are auto-installed
+- minecraft-launcher-lib ~= 7.1
+- pyqt6 ~= 6.9.0 
+- jpype1 ~= 1.5.2
+- pip-tools ~= 7.4.1 
+- PyQt6-WebEngine ~= 6.9.0
+- pillow ~= 11.2.1
+- PyOpenGL ~= 3.1.9
+- numpy ~= 2.2.5
 
 ###### release_manifest.json format
 
@@ -80,7 +85,7 @@ Release is a .zip file. The main directory, (not assets) has the public entry po
 
 ###### Extra dependencies for platform
 
-- pywin32
+- pywin32 (auto installed)
 
 ##### Linux
 
