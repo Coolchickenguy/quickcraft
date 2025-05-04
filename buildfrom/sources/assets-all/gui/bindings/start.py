@@ -1,22 +1,22 @@
-from collections.abc import Callable
 import os
-from typing import Any
+from typing import Any, Union
 from .. import common
-from . import bindings, install, proguard_parse, jcmd2jpype
+from . import bindings, install, proguard_parse, jcmd2jpype, auth
 import multiprocessing
 from assets_root import assets_root
 import os
 import sys
+
 class start:
 
     startProcessUuid:str
     bdcpmInstance:common.TaskManagerClass.bidirectionalCrossProcessControlManager
     mcPid:int 
-
+    startvars:tuple[str,str,str]
     def start(self):
         print("Minecraft starting")
         try:
-            uname, uuid = bindings.gen_startvars()
+            uname, uuid, access_token = self.startvars
             #self.bdcpmInstance.set("mcPid",bindings.start(ver=bindings.latest_ver(),uname=uname,uuid=uuid))
             ver = bindings.latest_ver()
             if bindings.is_java_broken():
@@ -32,8 +32,7 @@ class start:
                     resultKey = key
                     break
             # END
-
-            command = bindings.start(ver=ver,uname=uname,uuid=uuid,just_command=True)
+            command = bindings.start(ver=ver,uname=uname,uuid=uuid,just_command=True,access_token=access_token)
             parsed=jcmd2jpype.parseJavaCommand(command[1:])
             parsed["jvm"].append(f"-javaagent:{os.path.join(assets_root,'quickcraft-agent.jar')}")
             parsed["jvm"].append(f"-DhookedClass={resultKey}")
@@ -60,6 +59,20 @@ class start:
         self.bdcpmInstance.set("minecraftOpened",True)
     def __init__(self,gui,onMcClose):
         gui.startInst = self
+        common.settings.beginGroup("account")
+        authEnabled=common.settings.value("authEnabled")
+        common.settings.endGroup()
+        def cracked():
+            self.startvars = bindings.gen_startvars() + ("nevergonagiveyouup",)
+
+        if authEnabled:
+            flow=auth.authFlow(auth.offical_mc_auth)
+            if flow[0]:
+                self.startvars = (flow[1]["name"],flow[1]["id"],flow[1]["access_token"]["access_token"])
+            else:
+                cracked()
+        else:
+            cracked()
         self.bdcpmInstance = common.TaskManager.bidirectionalCrossProcessControlManager()
 
         self.startProcessUuid = common.TaskManager.startTask(multiprocessing.Process(target=self.start),"minecraft",install.qtThreadOrProcessMon)

@@ -2,7 +2,7 @@ from multiprocessing.connection import Connection
 from typing import Any
 from PyQt6.QtWidgets import QApplication, QLabel, QSizePolicy
 from PyQt6.QtGui import QFontDatabase, QPixmap, QPalette, QBrush, QIcon
-from PyQt6.QtCore import Qt, QSize
+from PyQt6.QtCore import Qt, QSize, pyqtSignal, QSettings
 import sys
 import multiprocessing
 import threading
@@ -20,6 +20,8 @@ if fontId < 0: print("Error")
  
 families = QFontDatabase.applicationFontFamilies(fontId)
 
+settings = QSettings("quickcraft", "quickcraftLauncher")
+
 def keyOfValueDict(d, val):
     for k, v in d.items():
         if id(v) == id(val):
@@ -35,7 +37,18 @@ def initBackround(self):
     palette.setBrush(QPalette.ColorRole.Window, QBrush(scaled))
     self.setPalette(palette)
     self.setAutoFillBackground(True)
-    
+
+class ClickableLabel(QLabel):
+    clicked = pyqtSignal()
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+
+    def mousePressEvent(self, event):
+        if event.button() == Qt.MouseButton.LeftButton:
+            self.clicked.emit()
+        super().mousePressEvent(event)
+
 class ResizablePixmapLabel(QLabel):
     def __init__(self, pixmap=None):
         super().__init__()

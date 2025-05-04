@@ -54,3 +54,31 @@ rm_allbut(parent_assets_root,["python",".venv","update_temp"])
 rm_allbut(os.path.dirname(parent_assets_root),["assets"])
 copytree_merge(os.path.dirname(assets_root),os.path.dirname(parent_assets_root))
 shutil.rmtree(assets_root)
+
+# Pkgfix
+import subprocess
+import sys
+import os
+
+def compile_requirements(input_file='requirements.in', output_file='requirements.txt'):
+    """Use pip-compile to generate a fully pinned requirements.txt"""
+    print(f"Compiling {input_file} into {output_file}...")
+    subprocess.check_call([sys.executable, "-m", "piptools", "compile", input_file, "-o", output_file])
+
+def sync_requirements(output_file='requirements.txt'):
+    """Use pip-sync to install exact packages and remove unneeded ones"""
+    print(f"Syncing environment with {output_file}...")
+    subprocess.check_call([sys.executable, "-m", "piptools", "sync", output_file])
+
+def main():
+    subprocess.check_call([sys.executable, "-m", "pip", "install", "pip-tools"])
+    input_file = 'requirements.txt'
+    output_file = 'requirements.pinned'
+
+    if not os.path.exists(input_file):
+        print(f"Error: {input_file} not found. Create it with your unpinned dependencies.")
+        sys.exit(1)
+
+    compile_requirements(input_file, output_file)
+    sync_requirements(output_file)
+main()

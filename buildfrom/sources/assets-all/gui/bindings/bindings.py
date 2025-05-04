@@ -56,11 +56,11 @@ def gen_startvars():
     uuid=uname_hash[0:6] + "-" + uname_hash[6:10] + "-" + uname_hash[10:14] + "-" + uname_hash[14:18] + "-" + uname_hash[18:30]
     return uname,uuid
 
-def start(ver:str,uname,uuid,just_command:bool = False):
+def start(ver:str,uname,uuid,just_command:bool = False,access_token:str = None):
     options = {
         "username": uname,
         "uuid": uuid,
-        "token": "nevergonagiveyouup",
+        "token": "nevergonagiveyouup" if access_token is None or access_token == "" else access_token,
     }
     minecraft_command = minecraft_launcher_lib.command.get_minecraft_command(ver, minecraft_directory, options)
     if just_command:

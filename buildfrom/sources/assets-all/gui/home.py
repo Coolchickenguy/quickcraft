@@ -1,10 +1,12 @@
-from PyQt6.QtWidgets import QWidget, QVBoxLayout, QPushButton
-from PyQt6.QtGui import QFont
+import os
+from . import auth, start, install, common
+from PyQt6.QtWidgets import QWidget, QVBoxLayout, QPushButton, QHBoxLayout
+from PyQt6.QtGui import QFont, QPixmap
 from PyQt6.QtCore import Qt, pyqtSignal
 import sys
-from . import start, install, common
 from .bindings import bindings, start as bindingsStart
 from .release_manifest import release_manifest
+from assets_root import assets_root
 
 class Window(QWidget):
     startInst:bindingsStart.start
@@ -41,6 +43,11 @@ class Window(QWidget):
         else:
             start_mc()
 
+    def openAccountWindow(self):
+        authWindow=auth.Window(auth.offical_mc_auth)
+        authWindow.show()
+        common.WinMan.add(authWindow)
+
     def __init__(self):
         super().__init__()
 
@@ -53,6 +60,16 @@ class Window(QWidget):
         layout = QVBoxLayout(self)
         layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
         common.initBackround(self)
+        # Add acount icon
+        h_layout = QHBoxLayout()
+        h_layout.addStretch()
+        buttonLabel = common.ClickableLabel()
+        pixmap = QPixmap(os.path.join(assets_root,"account.svg"))
+        buttonLabel.setPixmap(pixmap.scaled(40,40))
+        buttonLabel.clicked.connect(self.openAccountWindow)
+        h_layout.addWidget(buttonLabel)
+        layout.addLayout(h_layout)
+        # Acount icon end
         common.initLogo(self,layout)
         button = QPushButton("Start")
         button.setFont(QFont(common.families[0], 80))
