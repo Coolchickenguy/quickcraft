@@ -3,6 +3,9 @@
 ## TODOS:
 - None
 
+## Knows mistakes
+- Skiped 2.1.0
+
 ## Docs
 
 ### How to use
