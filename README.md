@@ -73,7 +73,7 @@ In assets, there is release_manifest.json. This is usedto tell the code info abo
 ```typescript
 type manifest = {
   vendor: {
-    rootUrl: "(the root url of the website that hosts the build releases, ie rootUrl/README.md)";
+    rootUrl: "(the root url of the website that hosts the build releases, ie https://quickcraft.glitch.me)";
     name: "(The name of the vendor)";
   };
   platform: "win" | "linux" | "macos";
