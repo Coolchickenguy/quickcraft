@@ -66,4 +66,4 @@ localpath=$(realpath ./)
 printf "\nIcon=$(realpath ./logo.png)" | tee -a "shortcut.desktop.from"
 printf "\nExec=/bin/sh $(realpath ./start.sh)" | tee -a "shortcut.desktop.from"
 printf "\nPath=$localpath" | tee -a "shortcut.desktop.from"
-sudo cp shortcut.desktop.from /usr/share/applications/quickcraft.desktop
+cp shortcut.desktop.from ~/.local/share/applications/quickcraft.desktop

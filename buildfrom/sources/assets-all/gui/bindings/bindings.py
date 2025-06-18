@@ -13,7 +13,7 @@ def latest_ver():
     return minecraft_launcher_lib.utils.get_latest_version()["release"]
 
 def installed(ver:str):
-    return (os.path.exists(minecraft_directory)) or not list(map(lambda x: x['id'],minecraft_launcher_lib.utils.get_installed_versions(minecraft_directory))).count(ver) == 0
+    return os.path.exists(minecraft_directory) and list(map(lambda x: x['id'],minecraft_launcher_lib.utils.get_installed_versions(minecraft_directory))).count(ver) != 0 and os.path.exists(os.path.join(minecraft_directory, "versions", ver, ver + ".jar"))
 
 def install (ver:str,cbdict:CallbackDict | None = None):
     minecraft_launcher_lib.install.install_minecraft_version(versionid=ver, minecraft_directory=minecraft_directory, callback=cbdict)
