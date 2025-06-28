@@ -21,7 +21,6 @@ public class hooks {
         // System.out.println("[Agent] Minecraft window was created!");
         if (hooks.listeners.containsKey("onWindowCreated")){
             for (Runnable listener : hooks.listeners.get("onWindowCreated")){
-                System.out.println(listener);
                 Thread t = new Thread(listener);
                 t.start();
             }

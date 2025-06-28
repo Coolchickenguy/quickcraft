@@ -42,7 +42,6 @@ class Window(QWidget):
     def closeEvent(self, event):
         super().closeEvent(event)
         if (self.installer != None and self.installer.done):
-            self.loading.timer.stop()
             event.accept()
             self.closed.emit()
         else:
@@ -55,7 +54,6 @@ class Window(QWidget):
             )
             if reply == QMessageBox.StandardButton.Yes:
                 if self.installer != None:
-                    self.loading.timer.stop()
                     self.installer.kill()
                     event.accept()
                     self.closed.emit()
