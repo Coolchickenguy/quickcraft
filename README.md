@@ -20,7 +20,7 @@
 Clone this repo with
 
 ```sh
-git clone https://api.glitch.com/git/quickcraft && cd quickcraft
+git clone https://github.com/Coolchickenguy/quickcraft.git && cd quickcraft
 ```
 
 Build with
