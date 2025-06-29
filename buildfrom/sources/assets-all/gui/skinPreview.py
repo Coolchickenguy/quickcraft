@@ -1,11 +1,9 @@
-import sys
 import math
 import requests
 from io import BytesIO
 from PIL import Image
-from PyQt6.QtWidgets import QApplication, QWidget, QVBoxLayout
 from PyQt6.QtOpenGLWidgets import QOpenGLWidget
-from PyQt6.QtCore import Qt, QPoint, QTimer
+from PyQt6.QtCore import QTimer
 from OpenGL.GL import *
 from OpenGL.GLU import *
 
@@ -347,7 +345,7 @@ class MinecraftViewer(QOpenGLWidget):
         glTranslatef(0, -diff, 0)  # Move back to base of the head
         # Head UVs (8x8 faces from 64x64 texture)
         uvs = list(map(lambda uv: self.uv(*uv), uvs_dict["hat"]))
-        self.draw_box((8.1, 8.1, 8.1), uvs)
+        self.draw_box((9, 9, 9), uvs)
         glPopMatrix()
 
     def draw_jacket(self):
@@ -355,7 +353,7 @@ class MinecraftViewer(QOpenGLWidget):
         glTranslatef(0, 14, 0)
 
         uvs = list(map(lambda uv: self.uv(*uv), uvs_dict["jacket"]))
-        self.draw_box((8.1, 12.1, 4.1), uvs)
+        self.draw_box((8.5, 12.5, 4.5), uvs)
         glPopMatrix()
 
     def draw_sleeve(self, x_offset, left, swing_offset):
@@ -377,7 +375,7 @@ class MinecraftViewer(QOpenGLWidget):
             uvs = list(map(lambda uv: self.uv(*uv), uvs_dict["sleeve-left-slim" if self.slim else "sleeve-left"]))
         else:
             uvs = list(map(lambda uv: self.uv(*uv), uvs_dict["sleeve-right-slim" if self.slim else "sleeve-right"]))
-        self.draw_box((3.1 if self.slim else 4.1, 12.1, 4.1), uvs)
+        self.draw_box((3.5 if self.slim else 4.5, 12.5, 4.5), uvs)
         glPopMatrix()
 
     def draw_pant(self, x_offset, left, swing_offset):
@@ -398,5 +396,5 @@ class MinecraftViewer(QOpenGLWidget):
             uvs = list(map(lambda uv: self.uv(*uv), uvs_dict["pant-left"]))
         else:
             uvs = list(map(lambda uv: self.uv(*uv), uvs_dict["pant-right"]))
-        self.draw_box((4.1, 12.1, 4.1), uvs)
+        self.draw_box((4.5, 12.5, 4.5), uvs)
         glPopMatrix()
