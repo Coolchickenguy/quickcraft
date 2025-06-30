@@ -62,6 +62,13 @@
       "linux": "/cdn/229188cad5485127b94843454b80975b.tar.gz",
       "macos": "/cdn/ac46d48d7e2f8cfe966c93317665102e.tar.gz",
       "channel": "stable"
+    },
+    {
+      "version": "2.4.1",
+      "win": "/cdn/e116a851a06fd1ed39985225b0c4e1c9.zip",
+      "linux": "/cdn/c4dabce615c1b105a0f5068f73c54db9.tar.gz",
+      "macos": "/cdn/42f992df774eff14e3014b125703e028.tar.gz",
+      "channel": "stable"
     }
   ]
 }

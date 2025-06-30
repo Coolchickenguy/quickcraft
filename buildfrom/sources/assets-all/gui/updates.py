@@ -98,12 +98,13 @@ class Window(QWidget):
         loading = loaders.UnknownTimeProgressBar()
         layout.addWidget(loading, alignment=Qt.AlignmentFlag.AlignCenter)
         # Layout finished
-
+        def ensure_trailing_slash(url: str) -> str:
+            return url if url.endswith('/') else url + '/'
         def findIndexJson(rootUrls: list[str]):
             for rootUrl in rootUrls:
                 try:
                     dlRequest = requests.request(
-                        method="get", url=urljoin(rootUrl, "release_index.json")
+                        method="get", url=urljoin(ensure_trailing_slash(rootUrl), "release_index.json")
                     )
                     self.rootUrl = rootUrl
                     return dlRequest.json()
