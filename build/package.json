@@ -1,0 +1,21 @@
+{
+  "name": "build",
+  "version": "1.0.0",
+  "description": "Build the website",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Coolchickenguy/quickcraft.git"
+  },
+  "author": "Coolchickenguy",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Coolchickenguy/quickcraft/issues"
+  },
+  "homepage": "https://github.com/Coolchickenguy/quickcraft#readme",
+  "dependencies": {
+    "picomatch": "^4.0.2"
+  }
+}

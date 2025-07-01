@@ -1,0 +1,9 @@
+.gitignore
+.buildignore
+LICENSE
+.vscode/**
+extradev/**
+buildfrom/**
+build/**
+dist/**
+.github/**

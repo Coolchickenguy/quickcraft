@@ -1,4 +1,4 @@
-<img src="buildfrom/sources/assets-all/logo_full.png">
+<img src="img/logo_full.png">
 
 ## TODOS:
 - None

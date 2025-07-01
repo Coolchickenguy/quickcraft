@@ -3,3 +3,4 @@ mapped.json
 reset.sh
 __pycache__
 extradev/jagent/target/
+dist/
