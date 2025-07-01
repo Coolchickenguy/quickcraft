@@ -31,6 +31,22 @@ I.e.
 ./buildfrom/release.sh 2.0.0 https://yourwebsite.com/quickcraft yourwebsite release
 ```
 
+As a more comprehensive example, here is the command that was used to build 2.4.1:
+
+```sh
+./buildfrom/release.sh 2.4.1 https://quickcraft.pages.dev\|https://coolchickenguy.github.io/quickcraft quickcraft_devs stable
+```
+
+Broken down, this is what the command did:
+./buildfrom/release.sh: run the build script
+
+2.4.1: that is the version.
+
+https://quickcraft.pages.dev\|https://coolchickenguy.github.io/quickcraft: The \| is escaped |. This tells the updater that the servers to check for updates are https://quickcraft.pages.dev, and if that site is not reachable, check https://coolchickenguy.github.io/quickcraft. The first reachable site will be checked for any higher-numbered versions of the same channel (provided later), and ask the user if they want to install the version. If yes, install it.
+
+quickcraft_devs: who made the release.
+
+stable: the channel. See section above the quickcraft_devs section.
 ### Info
 
 #### release_index.json format
@@ -73,7 +89,7 @@ In assets, there is release_manifest.json. This is usedto tell the code info abo
 ```typescript
 type manifest = {
   vendor: {
-    rootUrl: "(the root url of the website that hosts the build releases, ie https://quickcraft.glitch.me)";
+    rootUrl: "(the root url of the website that hosts the build releases, ie https://coolchickenguy.github.io/quickcraft or multable, the first avalible one will be used, like https://quickcraft.pages.dev|https://coolchickenguy.github.io/quickcraft)";
     name: "(The name of the vendor)";
   };
   platform: "win" | "linux" | "macos";
@@ -92,7 +108,7 @@ Release is a .zip file. The main directory, (not assets) has the public entry po
 
 ##### Linux
 
-Release is a .tar.gz file. The main directory, (not assets) has the public entry points installer.sh (for installing to the local dir), and start.sh (for starting). The assets directory has installer.sh, start.sh (what the main directory calls), and shortcut.desktop.from as a template for the shortcut.
+Release is a .tar.gz file. The main directory, (not assets) has the public entry points installer.sh (for installing to the local dir), and start.sh (for starting). The assets directory has installer.sh, start.sh (what the main directory call), and shortcut.desktop.from as a template for the shortcut.
 
 ###### Extra dependencies for platform
 
