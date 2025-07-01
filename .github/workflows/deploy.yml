@@ -45,6 +45,8 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+      - name: Install wrangler
+        run: npm i -G wrangler
       - name: Deploy to Cloudflare Pages
         run: |
           wrangler pages deploy ./dist \
