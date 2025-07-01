@@ -3,6 +3,7 @@ name: Deploy static content to github Pages and cloudflare Pages
 on:
   push:
     branches: ["main"]
+  workflow_dispach:
 
 # Allow deployment to GitHub Pages
 permissions:
