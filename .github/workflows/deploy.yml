@@ -36,7 +36,7 @@ jobs:
         run: npm ci
         working-directory: ./build
       - name: build
-        run: node ./build/index.js
+        run: node ./buildsite/index.js
       - name: Setup Pages
         uses: actions/configure-pages@v5
       - name: Upload artifact
