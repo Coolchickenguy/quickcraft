@@ -1,4 +1,6 @@
 # Adapted from a stackoverflow answer, counld not remember the url
+# Good luck maintaining
+# Does not handle changing state while animation is still running well with the color transition
 from PyQt6.QtCore import QObject, QSize, QPointF, QPropertyAnimation, QEasingCurve, pyqtProperty, pyqtSlot, Qt
 from PyQt6.QtGui import  QPainter, QLinearGradient, QGradient, QColor
 from PyQt6.QtWidgets import QAbstractButton, QApplication
@@ -20,7 +22,7 @@ class SwitchPrivate(QObject):
         self.animation.setPropertyName(b'position')
         self.animation.setStartValue(0.0)
         self.animation.setEndValue(1.0)
-        self.animation.setDuration(200)
+        self.animation.setDuration(500)
         self.animation.setEasingCurve(QEasingCurve.Type.InOutExpo)
 
         for index in range(len(self.colors[0])):
@@ -28,7 +30,7 @@ class SwitchPrivate(QObject):
                 attr=f"color-{str(index)}-{key}"
                 self.setProperty(attr,self.colors[0][index][key])
                 bgAnimation = QPropertyAnimation(self,bytes(attr,"utf8"))
-                bgAnimation.setDuration(200)
+                bgAnimation.setDuration(500)
                 bgAnimation.setEasingCurve(QEasingCurve.Type.InOutCubic)
                 bgAnimation.state = False
                 def onFinish():

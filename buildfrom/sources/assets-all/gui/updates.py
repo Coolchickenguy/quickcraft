@@ -1,7 +1,7 @@
 import requests
 from urllib.parse import urljoin
 import os
-from PyQt6.QtWidgets import QWidget, QVBoxLayout, QLabel, QMessageBox
+from PyQt6.QtWidgets import QWidget, QVBoxLayout, QLabel, QMessageBox, QSizePolicy
 from PyQt6.QtGui import QFont
 from PyQt6.QtCore import Qt, QTimer
 import sys
@@ -14,7 +14,7 @@ import threading
 
 
 class Window(QWidget):
-    statusLabel: QLabel
+    statusLabel: common.ResizingTextLabel
     allowClose: bool = False
     rootUrl: str
 
@@ -89,22 +89,32 @@ class Window(QWidget):
         layout = QVBoxLayout(self)
         layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
         common.initBackround(self)
-        common.initLogo(self, layout)
-        self.statusLabel = QLabel()
-        self.statusLabel.setText("Checking for updates")
-        self.statusLabel.setFont(QFont(common.families[0], 40))
-        self.statusLabel.adjustSize()
-        layout.addWidget(self.statusLabel, alignment=Qt.AlignmentFlag.AlignCenter)
-        loading = loaders.UnknownTimeProgressBar()
-        layout.addWidget(loading, alignment=Qt.AlignmentFlag.AlignCenter)
+        common.initLogo(self, layout, stretch=3)
+        self.statusLabel = common.ResizingTextLabel()
+        self.statusLabel.label.setText("Checking for updates")
+        self.statusLabel.label.setFont(QFont(common.families[0], 40))
+        self.statusLabel.setSizePolicy(
+            QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding
+        )
+        layout.addWidget(self.statusLabel, stretch=1)
+        loading = loaders.UnknownTimeProgressBar(fixed=False)
+        loading.setSizePolicy(
+            QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding
+        )
+        layout.addWidget(loading, stretch=2)
+
         # Layout finished
         def ensure_trailing_slash(url: str) -> str:
-            return url if url.endswith('/') else url + '/'
+            return url if url.endswith("/") else url + "/"
+
         def findIndexJson(rootUrls: list[str]):
             for rootUrl in rootUrls:
                 try:
                     dlRequest = requests.request(
-                        method="get", url=urljoin(ensure_trailing_slash(rootUrl), "release_index.json")
+                        method="get",
+                        url=urljoin(
+                            ensure_trailing_slash(rootUrl), "release_index.json"
+                        ),
                     )
                     self.rootUrl = rootUrl
                     return dlRequest.json()
@@ -125,6 +135,7 @@ class Window(QWidget):
         res = findIndexJson(release_manifest["vendor"]["rootUrl"].split("|"))
         if res == -1:
             return
+
         def compareVersions(versions: list[str]):
             split = list(
                 map(
@@ -162,6 +173,7 @@ class Window(QWidget):
             if reply == QMessageBox.StandardButton.No:
                 self.safeClose()
                 return
+            self.statusLabel.label.setText("Updating")
             # Find version that latest is
             for release in res["releases"]:
                 if release["version"] == latest:

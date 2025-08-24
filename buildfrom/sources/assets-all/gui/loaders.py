@@ -3,7 +3,6 @@ from PyQt6.QtCore import Qt, QTimer, pyqtSignal
 from PyQt6.QtGui import QColor, QPainter
 from PyQt6.QtWidgets import QApplication, QWidget
 import math
-from . import common
 def sinDeg(x):
     return math.sin(math.radians(x))
 
@@ -13,12 +12,16 @@ class UnknownTimeProgressBar(QWidget):
 
     def __del__(self):
         self.timer.stop()
-    def __init__(self, parent=None, width=600, height=70, border_width=2, border_radius=15, sine_factor=8):
+
+    def __init__(self, parent=None, width=600, height=70, border_width=2, border_radius=15, sine_factor=8, fixed=True):
         super().__init__(parent)
 
         # Set the initial progress and size of the progress bar
         self.progress = 0
-        self.setFixedSize(width, height)
+        if (fixed):
+            self.setFixedSize(width, height)
+        else:
+            self.resize(width, height)
 
         # Create a timer to update the progress
         self.timer = QTimer(self)
@@ -84,12 +87,16 @@ class PercentProgressBar(QWidget):
         self.closed.emit()
         event.accept()
 
-    def __init__(self, parent=None, width=600, height=70, border_width=2, border_radius=15):
+    def __init__(self, parent=None, width=600, height=70, border_width=2, border_radius=15, fixed=True):
         super().__init__(parent)
 
         # Set the initial progress and size of the progress bar
         self.progress = 0
-        self.setFixedSize(width, height)
+
+        if (fixed):
+            self.setFixedSize(width, height)
+        else:
+            self.resize(width, height)
 
         # Set attributes
         self.border_width = border_width
@@ -124,13 +131,12 @@ class PercentProgressBar(QWidget):
         painter.drawRoundedRect(self.border_width, self.border_width, progress_width, borderedHeight,self.border_radius-self.border_width,self.border_radius-self.border_width)
 
 if __name__ == "__main__":
-
-    window = UnknownTimeProgressBar()
+    app = QApplication(sys.argv)
+    window = UnknownTimeProgressBar(fixed=False)
     window.show()
 
-    window2 = PercentProgressBar()
+    window2 = PercentProgressBar(fixed=False)
     window2.show()
     window2.progress = 50
     window2.update()
-
-    sys.exit(common.app.exec())
+    sys.exit(app.exec())

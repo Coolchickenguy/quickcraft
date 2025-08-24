@@ -1,6 +1,6 @@
 import os
 from . import auth, start, install, common
-from PyQt6.QtWidgets import QWidget, QVBoxLayout, QPushButton, QHBoxLayout
+from PyQt6.QtWidgets import QWidget, QVBoxLayout, QPushButton, QSizePolicy
 from PyQt6.QtGui import QFont, QPixmap
 from PyQt6.QtCore import Qt, pyqtSignal
 import sys
@@ -61,23 +61,21 @@ class Window(QWidget):
         layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
         common.initBackround(self)
         # Add acount icon
-        h_layout = QHBoxLayout()
-        h_layout.addStretch()
-        buttonLabel = common.ClickableLabel()
+        buttonLabel = common.ResizableClickableLabel()
         pixmap = QPixmap(os.path.join(assets_root,"account.svg"))
-        buttonLabel.setPixmap(pixmap.scaled(40,40))
+        buttonLabel.setPixmap(pixmap)
         buttonLabel.clicked.connect(self.openAccountWindow)
-        h_layout.addWidget(buttonLabel)
-        layout.addLayout(h_layout)
+        buttonLabel.setAlignment(Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter)
+        layout.addWidget(buttonLabel, stretch=1)
         # Acount icon end
-        common.initLogo(self,layout)
-        button = QPushButton("Start")
-        button.setFont(QFont(common.families[0], 80))
-        button.adjustSize()
-        button.setStyleSheet("background-color: green;border-radius:15px;")
-        layout.addWidget(button,alignment=Qt.AlignmentFlag.AlignCenter)
-        button.clicked.connect(self.on_start)
-        self.button = button
+        common.initLogo(self,layout, stretch=4)
+        button = common.ResizingButton("Start")
+        button.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
+        button.button.setFont(QFont(common.families[0], 12))
+        button.button.setStyleSheet("background-color: green;border-radius:15px;")
+        button.button.clicked.connect(self.on_start)
+        layout.addWidget(button, stretch=3)
+        self.button = button.button
     def closeEvent(self, event):
         if self.isRunning and self.startInst:
             self.startInst.close()

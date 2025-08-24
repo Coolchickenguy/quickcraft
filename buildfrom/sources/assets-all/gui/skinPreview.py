@@ -3,7 +3,8 @@ import requests
 from io import BytesIO
 from PIL import Image
 from PyQt6.QtOpenGLWidgets import QOpenGLWidget
-from PyQt6.QtCore import QTimer
+from PyQt6.QtCore import QTimer, QSize
+from PyQt6.QtWidgets import QApplication
 from OpenGL.GL import *
 from OpenGL.GLU import *
 
@@ -154,6 +155,9 @@ class MinecraftViewer(QOpenGLWidget):
         self.timer.timeout.connect(self.update_animation)
         self.timer.start(16)  # ~60 FPS
 
+    def minimumSizeHint(self):
+        return QSize(10, 30)
+    
     def update_animation(self):
         self.swing_phase += 0.1  # Adjust speed here
         self.update()  # Triggers paintGL
@@ -178,12 +182,43 @@ class MinecraftViewer(QOpenGLWidget):
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
         glLoadIdentity()
 
-        # Set camera view
-        gluLookAt(-25, 12, 45, 0, 12, 0, 0, 1, 0)
+        model_height = 32
+        model_width = 12
+        #margin_px = 50
+
+        w = max(self.width(), 1)
+        h = max(self.height(), 1)
+
+        aspect = w / h
+        #margin_x_frac = min(margin_px / w, 0.4)  # Clamp max 40%
+        #margin_y_frac = min(margin_px / h, 0.4)
+
+        margin_x_frac = 0.1
+        margin_y_frac = 0.1
+
+        # Prevent division by zero
+        denom_y = max(1e-3, 1 - 2 * margin_y_frac)
+        denom_x = max(1e-3, 1 - 2 * margin_x_frac)
+
+        fov_y_rad = math.radians(45.0)
+
+        total_height = model_height / denom_y
+        total_width = model_width / denom_x
+
+        dist_y = total_height / (2 * math.tan(fov_y_rad / 2))
+        fov_x_rad = 2 * math.atan(math.tan(fov_y_rad / 2) * aspect)
+        dist_x = total_width / (2 * math.tan(fov_x_rad / 2))
+
+        distance = max(dist_x, dist_y)
+
+        model_center_y = model_height / 2 - 2
+
+        gluLookAt(0, model_center_y, distance,
+                  0, model_center_y, 0,
+                  0, 1, 0)
 
         glBindTexture(GL_TEXTURE_2D, self.texture_id)
 
-        # Draw body parts with correct transformations
         self.draw_body()
         self.draw_leg(-2, True, 0)
         self.draw_leg(2, False, math.pi)
@@ -398,3 +433,10 @@ class MinecraftViewer(QOpenGLWidget):
             uvs = list(map(lambda uv: self.uv(*uv), uvs_dict["pant-right"]))
         self.draw_box((4.5, 12.5, 4.5), uvs)
         glPopMatrix()
+
+if __name__ == '__main__':
+    import sys
+    app = QApplication(sys.argv)
+    w = MinecraftViewer("https://www.minecraftskins.net/ghastpilot/download", False)
+    w.show()
+    sys.exit(app.exec())
