@@ -31,6 +31,7 @@ jobs:
         with:
          node-version: v24
          cache: 'npm'
+         cache-dependency-path: ./buildsite/package-lock.json
       - name: install deps
         run: npm ci
         working-directory: ./build
