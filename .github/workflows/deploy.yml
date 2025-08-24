@@ -26,12 +26,11 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Use Node.js ${{ matrix.node-version }}
+      - name: Use Node.js v24
         uses: actions/setup-node@v3
         with:
-         node-version: ${{ matrix.node-version }}
+         node-version: v24
          cache: 'npm'
-         cache-dependency-path: ./buildsite/package-lock.json
       - name: install deps
         run: npm ci
         working-directory: ./build
