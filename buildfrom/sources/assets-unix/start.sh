@@ -13,6 +13,7 @@ mkdir preserve/updates/acode
 cp ./gui/updates.py preserve/updates/acode
 cp ./gui/common.py preserve/updates/acode
 cp ./gui/loaders.py preserve/updates/acode
+cp ./gui/collapsibleSection.py preserve/updates/acode
 cp ./gui/_types.py preserve/updates/acode
 cp ./gui/release_manifest.py preserve/updates/acode
 

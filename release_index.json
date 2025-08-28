@@ -76,6 +76,22 @@
       "linux": "/cdn/d6b969b8043418e317b6c0c07d1d7193.tar.gz",
       "macos": "/cdn/f8af74ed48b23121c1d3dbafb003bc80.tar.gz",
       "channel": "stable"
+    },
+    {
+      "version": "2.6.0",
+      "win": "/cdn/61fa8fce02ef043561a390725b341085.zip",
+      "sig_win": "/cdn/fb25b87e65775167e86de87b592957df.sig",
+      "linux": "/cdn/7ee92fe008992862a88988518a63ff2a.tar.gz",
+      "sig_linux": "/cdn/56e38634cfa0c9ed99fd3eb37535fd18.tar.gz.sig",
+      "macos": "/cdn/5f4b7b7f7911c9e482b4deed8a5de805.tar.gz",
+      "sig_macos": "/cdn/9e3793b62b5e17ac013ccb3a2984fc57.tar.gz.sig",
+      "channel": "stable"
     }
-  ]
+  ],
+  "publishers": {
+    "-----BEGIN PUBLIC KEY-----\nMIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEArft3bz40oBGtSyLiDuJJ\n1rnmR/5F45XogLSzZ+p+6rgIFHJ4+8Ha5U9we5VDw9vRxPKwNBAf8ZBOmufXQX3o\nT1rZxrRes2qIvybyAPXYOAaNzVv5hgPV/KYMjQMlZzQNjpkXKJRqOZTSuw4hpbuW\nzpj1kAaFpmM3sBbck9xO7LNK2cYSXuELFjga5xTaf/RvIpAPEh63ewgGXXHH+M7S\nEUwPhvcWZ6Py5+E0oVKKJv5hqylR0UfNe+a66X5KiQZ3Db4D9uCT8IrCpZBjeg1h\nolNPAu7hRd7fe6VE66/s2V1rkH+c8M4GfI/5xcQPRKbYcke+dlbDqzTL3XN3GGPo\nUtFtuiNZxkXoEGlI/akpXVdum//vVixyOyflwIonfI5duEmaueh5CMGNRPtJEYv7\ngb/Kz0SIrnlGtUv+ycwAI/8hABfIw1ZrkuVqj3kV7y0daE5xSafhkbbIZUqMc4gz\nKsby0vhg/s5M5XL8XyNLFT6HmxyuzTLLAco/axADGGlVNMLSzAg0EkbYJLcDjh8C\n6XwDEww6AVHglPNeS2VJ8pLKe+e24uWXE7YSg6Yk3GN6N/Lx9RfTVulvK1WtG/0n\n8Cni3DEuz9Nd7Rx5zpVBvQPZ3iuCFpFxBNyDv5t9R7mtnGtj7cvQtxazcK0ISNjG\nJpNKjddUySnKHkIt2h2UkdMCAwEAAQ==\n-----END PUBLIC KEY-----": {
+      "name_sig": "OscVB/euv2EDdv65TMpif6abEqu9FMtxDhlTNXYYB+0wcfZ6KOdYKxl37n2k85Fdvo+TqKrRdplI\nwR716tta4MIjt+gfkm3xnvESUb6infH5/WU3iXqd9oLxi055Rjzklx4haWoukX+XBqIDOCCQUwrC\nJWkJoN99wc3kH7mmAkU+ZBqwPJfTQz60MSWzRdWWZLBOERoIZ/vitI7OsLRRNkP+pm5pbqgBllA8\n9cEp8ZasPAGXqsnGLOMADEaWnJrFlNlA1pHhbhD2XxFrWTcx0Ub4wDjGH17ksEzjRHTtsoC+KA9F\ntylfag/WUTN7Yr7UT2MaMhNZCL4o9tOwmLOZtgcV3rdXoDp0oC9jXWQxIBbNL2AogJ5JIFeZMOhn\ndB8ve0LioFA9XZG9vZg/pZ8sLycWHnlnlkDU1MKWbg3X2EYCqnfgA6YP++85TGCQWD09WNISBOcI\nq/oiZ8+Rv3Ed0g/S1eEB9TcY1vV623IWNP9eF6+lm41sajNvC35RBxGu25rIS34/m+FHYiNhVsNq\n1sEAPgtu8gYxqYLv2IyDkqPgmeGvcqe37fndBsIK/VtuP7gvDmc/CUvRNQvtGSRcBvfshQ9EEelZ\noWHfRf5y31aNUr7OpYvtD2TOuhRBhkvAYX40SRT+gYTL0QdG6nhS8I1qRCzSpIBt2sGp+FzgCIY=",
+      "name": "coolchickenguy"
+    }
+  }
 }

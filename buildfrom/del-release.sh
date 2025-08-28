@@ -1,5 +1,7 @@
 #!/bin/sh
 
+#set -e
+
 if [ "$#" -ne 2 ]; then
     echo "Usage: $0 <version> <channel>"
     exit 1
@@ -16,11 +18,17 @@ handleVersions() {
     if [ "$checkingVersion" = "$version" ] && [ "$checkingChannel" = "$channel" ]; then
         del_cdn_plat() {
             cdn_url=$(printf "$release" | jq -r ".$1")
+            if [ $? -ne 0 ]; then
+                echo "Could not find $1"
+            fi
             rm ".$cdn_url"
         }
         del_cdn_plat win
+        del_cdn_plat sig_win
         del_cdn_plat linux
+        del_cdn_plat sig_linux
         del_cdn_plat macos
+        del_cdn_plat sig_macos
         jq --argjson release "$release" '.releases |= map(select(. != $release))' release_index.json | $shdir/sponge.sh release_index.json
         line=$(cat "download-archive.html" | grep "version=\"$checkingVersion\"" | grep "Channel: $checkingChannel")
         escaped_line=$(printf '%s\n' "$line" | sed 's/[^^]/[&]/g; s/\^/\\^/g')

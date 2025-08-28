@@ -16,6 +16,7 @@ Copy-Item "./gui/updates.py" -Destination "./preserve/updates/acode"
 Copy-Item "./gui/common.py" -Destination "./preserve/updates/acode"
 Copy-Item "./gui/loaders.py" -Destination "./preserve/updates/acode"
 Copy-Item "./gui/release_manifest.py" -Destination "preserve/updates/acode"
+Copy-Item "./gui/collapsibleSection.py" -Destination "preserve/updates/acode"
 Copy-Item "./gui/_types.py" -Destination "./preserve/updates/acode"
 
 "import acode.updates`nacode.updates.startApp()" | Out-File -Encoding UTF8 -FilePath "./preserve/updates/main.py"

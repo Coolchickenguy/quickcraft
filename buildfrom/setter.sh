@@ -1,5 +1,7 @@
 #!/bin/sh
 
+set -e
+
 # Check if the script has received the proper args
 if [ "$#" -ne 3 ]; then
     echo "Usage: $0 <file> <new_value> <hid (the ____-pre/post)>"

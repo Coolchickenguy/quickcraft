@@ -1,5 +1,7 @@
 #!/bin/sh
 
+set -e
+
 # Check if the script has received the proper args
 if [ "$#" -ne 3 ]; then
     echo "Adds a element to an ol. Usage: $0 <file> <html> <hid (the ____-pre/post)>"

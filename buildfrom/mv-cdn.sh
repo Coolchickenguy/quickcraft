@@ -1,17 +1,20 @@
 #!/bin/sh
 
-echo "Moving $1 to cdn" >&2
+set -e
+path="$(realpath "$1")"
 
-sum=$(cat $1 | md5sum | cut -d' ' -f1)
+echo "Moving $path to cdn" >&2
+
+sum=$(cat $path | md5sum | cut -d' ' -f1)
 ext=""
 case "${1##*/}" in
     *.tar.*)
-        ext=${1#*.}
+        ext="${path#*.}"
         ;;
     *)
-        ext=${1##*.}
+        ext="${path##*.}"
         ;;
 esac
-path="./cdn/$sum.$ext"
-mv $1 $path
-echo $path
+new_path="./cdn/$sum.$ext"
+mv "$path" "$new_path"
+echo "$new_path"

@@ -1,5 +1,7 @@
 #!/bin/sh
 
+set -e
+
 # Check if the script has received three arguments
 if [ "$#" -ne 2 ]; then
     echo "Usage: $0 <win/linux/macos> <manifest>"
@@ -28,7 +30,7 @@ mkdir -p "$builddir"
 mkdir "$builddir/assets"
 try_cp "$shdir/sources/assets-all/*" "$builddir/assets"
 
-printf "$2 "> "$builddir/assets/release_manifest.json"
+printf '%s' "$2" > "$builddir/assets/release_manifest.json"
 if [ "$1" = "win" ]; then
     try_cp "$shdir/sources/assets-win/*" "$builddir/assets"
     try_cp "$shdir/sources/main-win/*" "$builddir"

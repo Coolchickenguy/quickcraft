@@ -14,6 +14,8 @@
 
 ### Build dependencies
 - jq
+- sed
+- openssl
 
 ### Building
 
@@ -24,29 +26,30 @@ git clone https://github.com/Coolchickenguy/quickcraft.git && cd quickcraft
 ```
 
 Build with
-./buildfrom/release.sh <\version> <\rootUrl> <\name (of builder)> <\channel>
+./buildfrom/release.sh <\version> <\rootUrl> <\name (of builder)> <\channel> <\private key path (optional)> <\public key path (optional)>
 I.e.
 
 ```sh
-./buildfrom/release.sh 2.0.0 https://yourwebsite.com/quickcraft yourwebsite release
+./buildfrom/release.sh 2.0.0 https://yourwebsite.com/quickcraft youruname release
 ```
 
-As a more comprehensive example, here is the command that was used to build 2.4.1:
+As a more comprehensive example, here is the command that was used to build 2.6.0:
 
 ```sh
-./buildfrom/release.sh 2.4.1 https://quickcraft.pages.dev\|https://coolchickenguy.github.io/quickcraft quickcraft_devs stable
+./buildfrom/release.sh 2.6.0 https://qui
+ckcraft.pages.dev\|https://coolchickenguy.github.io/quickcraft coolchickenguy stable
 ```
 
 Broken down, this is what the command did:
 ./buildfrom/release.sh: run the build script
 
-2.4.1: that is the version.
+2.6.0: that is the version.
 
 https://quickcraft.pages.dev\|https://coolchickenguy.github.io/quickcraft: The \| is escaped |. This tells the updater that the servers to check for updates are https://quickcraft.pages.dev, and if that site is not reachable, check https://coolchickenguy.github.io/quickcraft. The first reachable site will be checked for any higher-numbered versions of the same channel (provided later), and ask the user if they want to install the version. If yes, install it.
 
-quickcraft_devs: who made the release.
+coolchickenguy: who made the release.
 
-stable: the channel. See section above the quickcraft_devs section.
+stable: the channel. See section above the this section.
 ### Info
 
 #### release_index.json format
@@ -56,9 +59,12 @@ type format = {
   releases: {
     version: "major.minor.patch";
     win: "windows download url (zip)";
+    sig_win: "windows download signature (may be null if unsigned)";
     linux: "linux download url (tar.gz)";
+    linux_win: "linux download signature (may be null if unsigned)";
     macos: "macos download url (tar.gz)";
-    channel: "dev" | "stable";
+    sig_macos: "macos download signature (may be null if unsigned)";
+    channel: string;
   }[];
 };
 ```
@@ -81,6 +87,7 @@ Contains an assets directory with the icons/most source code.
 - pillow ~= 11.2.1
 - PyOpenGL ~= 3.1.9
 - numpy ~= 2.2.5
+- cryptography ~= 45.0.6
 
 ###### release_manifest.json format
 
@@ -91,6 +98,7 @@ type manifest = {
   vendor: {
     rootUrl: "(the root url of the website that hosts the build releases, ie https://coolchickenguy.github.io/quickcraft or multable, the first avalible one will be used, like https://quickcraft.pages.dev|https://coolchickenguy.github.io/quickcraft)";
     name: "(The name of the vendor)";
+    publicKey?: "(the public key of the vendor, optional)";
   };
   platform: "win" | "linux" | "macos";
   version: "(version of release, major.minor.patch)";
