@@ -7,3 +7,7 @@ buildfrom/**
 build/**
 dist/**
 .github/**
+keys/**
+.venv/**
+.vscode/**
+buildsite/**
