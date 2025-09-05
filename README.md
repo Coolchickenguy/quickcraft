@@ -36,8 +36,7 @@ I.e.
 As a more comprehensive example, here is the command that was used to build 2.6.0:
 
 ```sh
-./buildfrom/release.sh 2.6.0 https://qui
-ckcraft.pages.dev\|https://coolchickenguy.github.io/quickcraft coolchickenguy stable
+./buildfrom/release.sh 2.6.0 https://quickcraft.pages.dev\|https://coolchickenguy.github.io/quickcraft coolchickenguy stable
 ```
 
 Broken down, this is what the command did:

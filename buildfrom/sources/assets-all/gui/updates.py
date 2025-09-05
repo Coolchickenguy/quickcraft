@@ -261,13 +261,14 @@ class Window(QWidget):
                     )
                 )
             )
+            if latest == release_manifest["version"]:
+                continue
             for release in index["index"]["releases"]:
                 if release["version"] == latest:
                     latest_release = release
                     break
             latestList.append({"release": latest_release, "url": index["url"]})
 
-        # while True:
         def next():
             latest = compareVersions(
                 list(map(lambda latest: latest["release"]["version"], latestList))
@@ -287,13 +288,11 @@ class Window(QWidget):
                 QMessageBox.StandardButton.Yes,
             )
             if reply == QMessageBox.StandardButton.NoAll:
-                self.safeClose()
                 return
             elif reply == QMessageBox.StandardButton.No:
                 latestList.pop(releaseIndex)
                 if len(latestList) == 0:
-                    # break
-                    pass
+                    return
                 else:
                     next()
             else:
@@ -308,17 +307,17 @@ class Window(QWidget):
                         ],
                     )
                 )
-                def wrap():
+                def wrap(uuid):
                     if not self.failed:
                         latestList.pop(releaseIndex)
                         if len(latestList) == 0:
-                            # break
                             pass
                         else:
                             next()
 
                 common.TaskManager.onEnd(taskUuid, wrap)
         next()
+        self.safeClose()
 
     def closeEvent(self, event):
         if self.allowClose:
