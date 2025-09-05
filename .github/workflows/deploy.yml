@@ -48,7 +48,7 @@ jobs:
         uses: actions/deploy-pages@v4
       - name: Deploy to Cloudflare Pages
         run: |
-          npx -y wrangler pages deploy ./dist \
+          ./buildsite/node_modules/.bin/wrangler pages deploy ./dist \
             --project-name=quickcraft \
             --branch=main
         env:

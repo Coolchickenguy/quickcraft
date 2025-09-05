@@ -16,6 +16,7 @@
   },
   "homepage": "https://github.com/Coolchickenguy/quickcraft#readme",
   "dependencies": {
-    "picomatch": "^4.0.2"
+    "picomatch": "^4.0.2",
+    "wrangler": "^4.34.0"
   }
 }

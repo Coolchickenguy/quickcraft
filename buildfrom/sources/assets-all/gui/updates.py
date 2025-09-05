@@ -24,6 +24,8 @@ import shutil
 from cryptography.hazmat.primitives import hashes, serialization
 from cryptography.hazmat.primitives.asymmetric import padding, utils
 
+def ensure_trailing_slash(url: str) -> str:
+    return url if url.endswith("/") else url + "/"
 
 class confirmInvalidSignature(QDialog):
     def __init__(self, parent=None, fromUrl="unknown"):
@@ -99,14 +101,14 @@ class Window(QWidget):
             dlPath = latest_release["linux"]
             sigDlPath = latest_release["sig_linux"]
         print(f"Downloading new release {latest_release}")
-        updateDlRequest = requests.request(method="get", url=urljoin(rootUrl, dlPath))
+        updateDlRequest = requests.request(method="get", url=urljoin(ensure_trailing_slash(rootUrl), dlPath))
         publicKey = release_manifest["vendor"]["publicKey"]
         if publicKey != None:
             loadedPublicKey = serialization.load_pem_public_key(
                 bytes(publicKey, "utf8")
             )
             sigDlRequest = requests.request(
-                method="get", url=urljoin(rootUrl, sigDlPath)
+                method="get", url=urljoin(ensure_trailing_slash(rootUrl), sigDlPath)
             )
             hasher = hashes.Hash(hashes.SHA256())
             hasher.update(updateDlRequest.content)
@@ -199,9 +201,6 @@ class Window(QWidget):
         layout.addWidget(loading, stretch=2)
 
         # Layout finished
-        def ensure_trailing_slash(url: str) -> str:
-            return url if url.endswith("/") else url + "/"
-
         def findIndexJsons(rootUrls: list[str]) -> list[dict[str, Any]]:
             indexes: list[dict[str, Any]] = []
             for rootUrl in rootUrls:
