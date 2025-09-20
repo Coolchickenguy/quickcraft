@@ -3,17 +3,7 @@ from . import bindings
 import multiprocessing
 from collections.abc import Callable
 from PyQt6.QtCore import QTimer
-timers = []
-def qtThreadOrProcessMon(threadOrProcess:_types.ThreadOrProcess,callback:Callable[[],None]):
-    timer = QTimer()
-    def check():
-        if not threadOrProcess.is_alive():
-            timer.stop()
-            threadOrProcess.join()
-            callback()
-    timer.timeout.connect(check)
-    timer.start(200)
-    timers.append(timer)
+
 
 class install:
     max_progress = 0
@@ -37,7 +27,7 @@ class install:
     def __init__(self,version,gui):
         print("Launching installer thread")
         self.bdcpmInstance = common.TaskManager.bidirectionalCrossProcessControlManager()
-        self.installUuid = common.TaskManager.startTask(multiprocessing.Process(target=self.install,args=[version]),"minecraft",qtThreadOrProcessMon)
+        self.installUuid = common.TaskManager.startTask(multiprocessing.Process(target=self.install,args=[version]),"minecraft",common.qtThreadOrProcessMon)
         self.bdcpmInstance.handleCalls(gui)
         def handeEnd(uuid:str):
             self.close()

@@ -1,5 +1,6 @@
 from multiprocessing.connection import Connection
-from typing import Any
+import queue
+from typing import Any, Union
 from PyQt6.QtWidgets import (
     QApplication,
     QLabel,
@@ -9,7 +10,18 @@ from PyQt6.QtWidgets import (
     QWidget,
 )
 from PyQt6.QtGui import QFontDatabase, QPixmap, QPalette, QBrush, QIcon, QFontMetrics
-from PyQt6.QtCore import Qt, QSize, pyqtSignal, QSettings
+from PyQt6.QtCore import (
+    Qt,
+    QSize,
+    pyqtSignal,
+    QSettings,
+    QTimer,
+    QObject,
+    QThread,
+    pyqtSlot,
+    QMetaObject,
+    QCoreApplication,
+)
 import sys
 import multiprocessing
 import threading
@@ -161,6 +173,8 @@ def __adjustFontSize__(self, rect):
 
 
 class __ResizingButton__(QPushButton):
+    textChanged = pyqtSignal()
+
     def __init__(self, text):
         super().__init__(text)
         self.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
@@ -168,6 +182,11 @@ class __ResizingButton__(QPushButton):
 
     def minimumSizeHint(self):
         return QSize(0, 0)
+    
+    def setText(self, text: str):
+        if text != self.text():
+            super().setText(text)
+            self.textChanged.emit()
 
 
 class ResizingButton(QWidget):
@@ -181,9 +200,13 @@ class ResizingButton(QWidget):
         self.button = __ResizingButton__(text)
         layout.addWidget(self.button, alignment=Qt.AlignmentFlag.AlignCenter)
         self.qlayout = layout
+        self.button.textChanged.connect(self.adjustContentsText)
 
     def resizeEvent(self, event):
         super().resizeEvent(event)
+        self.adjustContentsText()
+
+    def adjustContentsText(self):
         __adjustFontSize__(self.button, self.contentsRect())
 
     def minimumSizeHint(self):
@@ -191,6 +214,8 @@ class ResizingButton(QWidget):
 
 
 class __ResizingTextLabel__(QLabel):
+    textChanged = pyqtSignal()
+
     def __init__(self, text):
         super().__init__(text)
         self.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
@@ -198,6 +223,11 @@ class __ResizingTextLabel__(QLabel):
 
     def minimumSizeHint(self):
         return QSize(0, 0)
+    
+    def setText(self, text: str):
+        if text != self.text():
+            super().setText(text)
+            self.textChanged.emit()
 
 
 class ResizingTextLabel(QWidget):
@@ -211,9 +241,13 @@ class ResizingTextLabel(QWidget):
         self.label = __ResizingTextLabel__(text)
         layout.addWidget(self.label, alignment=Qt.AlignmentFlag.AlignCenter)
         self.qlayout = layout
+        self.label.textChanged.connect(self.adjustContentsText)
 
     def resizeEvent(self, event):
         super().resizeEvent(event)
+        self.adjustContentsText()
+
+    def adjustContentsText(self):
         __adjustFontSize__(self.label, self.contentsRect())
 
     def minimumSizeHint(self):
@@ -262,6 +296,51 @@ class WinManClass:
 WinMan = WinManClass()
 
 TaskManagerInstanceCount = [0]
+
+timers = []
+
+
+def qtThreadOrProcessMon(
+    threadOrProcess: _types.ThreadOrProcess, callback: Callable[[], None]
+):
+    timer = QTimer()
+
+    def check():
+        if not threadOrProcess.is_alive():
+            timer.stop()
+            timers.remove(timer)
+            threadOrProcess.join()
+            callback()
+
+    timer.timeout.connect(check)
+    timer.start(200)
+    timers.append(timer)
+
+
+class MainThreadInvoker(QObject):
+    _instance = None
+
+    # Signal carrying a callable to invoke
+    invoke_signal = pyqtSignal(object)
+
+    def __init__(self):
+        super().__init__()
+        self.invoke_signal.connect(self._invoke)
+
+    @staticmethod
+    def instance():
+        if MainThreadInvoker._instance is None:
+            MainThreadInvoker._instance = MainThreadInvoker()
+        return MainThreadInvoker._instance
+
+    def _invoke(self, func):
+        try:
+            func()
+        except Exception as e:
+            print(f"Exception in invoked function: {e}")
+
+
+MainThreadInvoker.instance()
 
 
 class TaskManagerClass:
@@ -454,39 +533,67 @@ class TaskManagerClass:
 
     class bidirectionalCrossProcessControlManager:
         stopped: bool = False
-        pipe: tuple[Connection, Connection]
+        pipe: Union[tuple[Connection, Connection], tuple[queue.Queue, queue.Queue]]
 
         handlerUuid: str = None
         on = None
         _mainPid: int
+        _origionalThread: str
+        isThread: bool
         responces: dict[str, dict[str, Any]] = {}
 
-        def __init__(self):
-            self.pipe = multiprocessing.Pipe()
+        def __init__(self, isThread=False):
+            self.pipe = (
+                [queue.Queue(), queue.Queue()] if isThread else multiprocessing.Pipe()
+            )
             self._mainPid = os.getpid()
+            self._origionalThread = threading.current_thread().name
+            self.isThread = isThread
+
+        def _isMain(self):
+            return (
+                (threading.current_thread().name is self._origionalThread)
+                if self.isThread
+                else (self._mainPid == os.getpid())
+            )
 
         def _controlHandler(
             self,
         ):
-            pipe = self.pipe[0] if self._mainPid == os.getpid() else self.pipe[1]
+            pipe = self.pipe[0] if self._isMain() else self.pipe[1]
+            sendFunc = pipe.put if self.isThread else pipe.send
             while not self.stopped and self.on is not None:
                 try:
-                    if pipe.poll(2):
-                        controlmsg = pipe.recv()
+
+                    def run(controlmsg):
                         if controlmsg["action"] == "invoke":
-                            out = getattr(self.on(), controlmsg["method"])(
-                                *controlmsg["args"], **controlmsg["kwargs"]
-                            )
-                            if controlmsg["return"]:
-                                pipe.send(
+                            func = getattr(self.on(), controlmsg["method"])
+
+                            def reply(out):
+                                sendFunc(
                                     {
                                         "action": "recv",
                                         "uuid": controlmsg["uuid"],
                                         "data": out,
                                     }
                                 )
+
+                            def wrapper():
+                                try:
+                                    out = func(
+                                        *controlmsg["args"], **controlmsg["kwargs"]
+                                    )
+                                    if controlmsg["return"]:
+                                        reply(out)
+                                except Exception as e:
+                                    print(f"Exception: {e}")
+
+                            if controlmsg["qtMainThreadify"]:
+                                MainThreadInvoker.instance().invoke_signal.emit(wrapper)
+                            else:
+                                wrapper()
                         elif controlmsg["action"] == "get":
-                            pipe.send(
+                            sendFunc(
                                 {
                                     "action": "recv",
                                     "uuid": controlmsg["uuid"],
@@ -497,25 +604,46 @@ class TaskManagerClass:
                             setattr(self.on(), controlmsg["prop"], controlmsg["value"])
                         elif controlmsg["action"] == "recv":
                             self.responces[controlmsg["uuid"]] = controlmsg
-                    else:
-                        continue
+
+                    if self.isThread:
+                        try:
+                            run(pipe.get_nowait())
+                        except queue.Empty:
+                            pass
+                    elif pipe.poll(2):
+                        run(pipe.recv())
                 except Exception as e:
                     print(e)
-            self.pipe[0].close()
-            self.pipe[1].close()
+                else:
+                    continue
+            if self.isThread:
+                self.pipe[0].closed = True
+                self.pipe[1].closed = True
+            else:
+                self.pipe[0].close()
+                self.pipe[1].close()
 
         def __del__(self):
             if self.pipe[0].closed == False:
-                self.pipe[0].close()
+                if self.isThread:
+                    self.pipe[0].closed = True
+                else:
+                    self.pipe[0].close()
             if self.pipe[1].closed == False:
-                self.pipe[1].close()
+                if self.isThread:
+                    self.pipe[1].closed = True
+                else:
+                    self.pipe[1].close()
 
-        def proxyOtherSideFunction(self, name: str, doReturn: bool = True):
-            pipe = self.pipe[0] if self._mainPid == os.getpid() else self.pipe[1]
+        def proxyOtherSideFunction(
+            self, name: str, doReturn: bool = True, qtMainThreadify: bool = False
+        ):
+            pipe = self.pipe[0] if self._isMain() else self.pipe[1]
+            sendFunc = pipe.put if self.isThread else pipe.send
 
             def func(*args, **kwargs):
                 msguuid = uuid.uuid4()
-                pipe.send(
+                sendFunc(
                     {
                         "action": "invoke",
                         "method": name,
@@ -523,6 +651,7 @@ class TaskManagerClass:
                         "kwargs": kwargs,
                         "uuid": msguuid,
                         "return": doReturn,
+                        "qtMainThreadify": qtMainThreadify,
                     }
                 )
                 if doReturn:
@@ -535,9 +664,10 @@ class TaskManagerClass:
             return func
 
         def get(self, key):
-            pipe = self.pipe[0] if self._mainPid == os.getpid() else self.pipe[1]
+            pipe = self.pipe[0] if self._isMain() else self.pipe[1]
+            sendFunc = pipe.put if self.isThread else pipe.send
             msguuid = uuid.uuid4()
-            pipe.send({"action": "get", "prop": key, "uuid": msguuid})
+            sendFunc({"action": "get", "prop": key, "uuid": msguuid})
             while not msguuid in self.responces:
                 pass
 
@@ -545,9 +675,10 @@ class TaskManagerClass:
             return res["data"]
 
         def set(self, key, value):
-            pipe = self.pipe[0] if self._mainPid == os.getpid() else self.pipe[1]
+            pipe = self.pipe[0] if self._isMain() else self.pipe[1]
+            sendFunc = pipe.put if self.isThread else pipe.send
             msguuid = uuid.uuid4()
-            pipe.send({"action": "set", "prop": key, "value": value, "uuid": msguuid})
+            sendFunc({"action": "set", "prop": key, "value": value, "uuid": msguuid})
 
         def handleCalls(self, on) -> bool:
             """Start a thread to handle all control calls

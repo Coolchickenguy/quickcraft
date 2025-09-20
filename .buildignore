@@ -11,3 +11,5 @@ keys/**
 .venv/**
 .vscode/**
 buildsite/**
+Dockerfile
+.venv12

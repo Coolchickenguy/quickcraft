@@ -1,5 +1,5 @@
 import threading
-from typing import Any
+from typing import Any, Callable
 import requests
 from urllib.parse import urljoin
 import os
@@ -13,7 +13,7 @@ from PyQt6.QtWidgets import (
     QDialogButtonBox,
     QPushButton,
 )
-from PyQt6.QtGui import QFont
+from PyQt6.QtGui import QFont, QResizeEvent
 from PyQt6.QtCore import Qt, QTimer
 import sys
 import subprocess
@@ -47,7 +47,7 @@ class confirmInvalidSignature(QDialog):
 
         # Discard update button
         discard_button = QDialogButtonBox(QDialogButtonBox.StandardButton.Close)
-        discard_button.accepted.connect(self.on_discard)
+        discard_button.clicked.connect(self.on_discard)
         layout.addWidget(discard_button)
 
         # Collapsible "Advanced" section
@@ -76,16 +76,18 @@ class confirmInvalidSignature(QDialog):
             return "discard"
         return "cancel"
 
+class updaterClass:
+    bdcpmInstance:common.TaskManagerClass.bidirectionalCrossProcessControlManager
 
-class Window(QWidget):
-    statusLabel: common.ResizingTextLabel
-    allowClose: bool = False
-    rootUrl: str
-    failed: bool = False
-    def updater(
-        self, latest_release: dict[str, Any], latest: str, rootUrl: str
-    ) -> bool:
-        self.failed = False
+    def __init__(self, host, latest_release: dict[str, Any], latest: str, rootUrl: str, callback: Callable[[bool], None]):
+        self.bdcpmInstance = common.TaskManager.bidirectionalCrossProcessControlManager(True)
+        self.threadUuid = common.TaskManager.startTask(threading.Thread(target=self._update,args=[latest_release,latest,rootUrl,callback]),"updater",common.qtThreadOrProcessMon)
+        common.TaskManager.onStart(self.threadUuid,lambda uuid: self.bdcpmInstance.handleCalls(host))
+        def stop():
+            self.bdcpmInstance.stopped = True
+        common.TaskManager.onEnd(self.threadUuid,lambda uuid: stop())
+
+    def _update(self, latest_release: dict[str, Any], latest: str, rootUrl: str, callback: Callable[[bool], None]):
         if latest_release is None:
             raise Exception(
                 "ERROR! ERROR! ERROR! Internal exception. Could not find refered version."
@@ -100,9 +102,53 @@ class Window(QWidget):
         else:
             dlPath = latest_release["linux"]
             sigDlPath = latest_release["sig_linux"]
-        print(f"Downloading new release {latest_release}")
+        print(f"Downloading new release {latest}")
         updateDlRequest = requests.request(method="get", url=urljoin(ensure_trailing_slash(rootUrl), dlPath))
         publicKey = release_manifest["vendor"]["publicKey"]
+
+        def dlCb():
+            print("Downloaded new release")
+            tmpPath = os.path.join(assets_root, "update_temp")
+            if release_manifest["platform"] == "win":
+                import zipfile
+                import io
+
+                with zipfile.ZipFile(io.BytesIO(updateDlRequest.content)) as zip_ref:
+                    zip_ref.extractall(tmpPath)
+            else:
+                import tarfile
+                import io
+
+                with tarfile.open(
+                    fileobj=io.BytesIO(updateDlRequest.content), mode="r:gz"
+                ) as tarObj:
+                    tarObj.extractall(path=tmpPath)
+            print("Extraced update")
+            p = subprocess.Popen(
+                [
+                    sys.executable,
+                    os.path.join(tmpPath, "assets", "update_fromlast.py"),
+                    assets_root,
+                    release_manifest["version"],
+                    latest,
+                ],
+                stdout=sys.stdout,
+                stderr=sys.stderr,
+            )
+            p.wait()
+            while True:
+                try:
+                    shutil.rmtree(tmpPath)
+                    break
+                except Exception as e:
+                    print("Could not delete update temp. Retrying")
+                    print(e)
+            print("Done update")
+            return True
+    
+        def wrapper():
+            callback(dlCb())
+
         if publicKey != None:
             loadedPublicKey = serialization.load_pem_public_key(
                 bytes(publicKey, "utf8")
@@ -123,84 +169,31 @@ class Window(QWidget):
                 print("Signature is valid.")
             except Exception as e:
                 print(f"Signature invalid: {e}")
-                popup = confirmInvalidSignature(fromUrl=rootUrl)
-                result = popup.exec_dialog()
+                result = self.bdcpmInstance.proxyOtherSideFunction("confirmInvalidSignature",True,True)(rootUrl)
                 if result == "continue":
                     print("Continuing anyway (Not my fault if you get a virus)")
+                    wrapper()
                 else:
-                    self.failed = True
-                    return False
-        print("Downloaded new release")
-        tmpPath = os.path.join(assets_root, "update_temp")
-        if release_manifest["platform"] == "win":
-            import zipfile
-            import io
-
-            with zipfile.ZipFile(io.BytesIO(updateDlRequest.content)) as zip_ref:
-                zip_ref.extractall(tmpPath)
+                    callback(False)
+            else:
+                wrapper()
         else:
-            import tarfile
-            import io
-
-            with tarfile.open(
-                fileobj=io.BytesIO(updateDlRequest.content), mode="r:gz"
-            ) as tarObj:
-                tarObj.extractall(path=tmpPath)
-        print("Extraced update")
-        p = subprocess.Popen(
-            [
-                sys.executable,
-                os.path.join(tmpPath, "assets", "update_fromlast.py"),
-                assets_root,
-                release_manifest["version"],
-                latest,
-            ],
-            stdout=sys.stdout,
-            stderr=sys.stderr,
-        )
-        p.wait()
-        while True:
-            try:
-                shutil.rmtree(tmpPath)
-                break
-            except Exception as e:
-                print("Could not delete update temp. Retrying")
-                print(e)
-        print("Done update")
-        self.safeClose()
-        return True
+            wrapper()
+class Window(QWidget):
+    statusLabel: common.ResizingTextLabel
+    allowClose: bool = False
+    rootUrl: str
 
     def safeClose(self):
         self.allowClose = True
         QTimer.singleShot(0, self.close)
 
-    def __init__(self):
-        super().__init__()
-        self.setWindowFlags(
-            Qt.WindowType.FramelessWindowHint | Qt.WindowType.WindowStaysOnTopHint
-        )
-        self.resize(600, 300)
-        self.setWindowTitle("Quickcraft")
-        self.setContentsMargins(20, 20, 20, 20)
+    def confirmInvalidSignature(self, url: str):
+        popup = confirmInvalidSignature(fromUrl=url)
+        return popup.exec_dialog()
 
-        layout = QVBoxLayout(self)
-        layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        common.initBackround(self)
-        common.initLogo(self, layout, stretch=3)
-        self.statusLabel = common.ResizingTextLabel()
-        self.statusLabel.label.setText("Checking for updates")
-        self.statusLabel.label.setFont(QFont(common.families[0], 40))
-        self.statusLabel.setSizePolicy(
-            QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding
-        )
-        layout.addWidget(self.statusLabel, stretch=1)
-        loading = loaders.UnknownTimeProgressBar(fixed=False)
-        loading.setSizePolicy(
-            QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding
-        )
-        layout.addWidget(loading, stretch=2)
-
-        # Layout finished
+    def start(self):
+        # Setup updates
         def findIndexJsons(rootUrls: list[str]) -> list[dict[str, Any]]:
             indexes: list[dict[str, Any]] = []
             for rootUrl in rootUrls:
@@ -211,7 +204,6 @@ class Window(QWidget):
                             ensure_trailing_slash(rootUrl), "release_index.json"
                         ),
                     )
-                    self.rootUrl = rootUrl
                     indexes.append({"url": rootUrl, "index": dlRequest.json()})
                 except Exception as e:
                     import warnings
@@ -268,7 +260,13 @@ class Window(QWidget):
                     break
             latestList.append({"release": latest_release, "url": index["url"]})
 
+        def close():
+            print("Closing")
+            self.safeClose()
         def next():
+            if len(latestList) == 0:
+                close()
+                return
             latest = compareVersions(
                 list(map(lambda latest: latest["release"]["version"], latestList))
             )
@@ -290,33 +288,47 @@ class Window(QWidget):
                 return
             elif reply == QMessageBox.StandardButton.No:
                 latestList.pop(releaseIndex)
-                if len(latestList) == 0:
-                    return
-                else:
-                    next()
+                next()
             else:
                 self.statusLabel.label.setText(f"Updating from mirror {latestList[latestIndex]["url"]}")
-                taskUuid = common.TaskManager.startTask(
-                    threading.Thread(
-                        target=self.updater,
-                        args=[
-                            latestList[latestIndex]["release"],
-                            latest,
-                            latestList[latestIndex]["url"],
-                        ],
-                    )
-                )
-                def wrap(uuid):
-                    if not self.failed:
+                def wrap(succeded):
+                    if not succeded:
                         latestList.pop(releaseIndex)
-                        if len(latestList) == 0:
-                            pass
-                        else:
-                            next()
+                        next()
+                    else:
+                        close()
+                updaterClass(self, latestList[latestIndex]["release"], latest, latestList[latestIndex]["url"], wrap)
 
-                common.TaskManager.onEnd(taskUuid, wrap)
         next()
-        self.safeClose()
+
+    def __init__(self):
+        super().__init__()
+        self.setWindowFlags(
+            Qt.WindowType.FramelessWindowHint | Qt.WindowType.WindowStaysOnTopHint
+        )
+        self.resize(600, 300)
+        self.setWindowTitle("Quickcraft")
+        self.setContentsMargins(20, 20, 20, 20)
+
+        layout = QVBoxLayout(self)
+        layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        common.initBackround(self)
+        common.initLogo(self, layout, stretch=3)
+        self.statusLabel = common.ResizingTextLabel()
+        self.statusLabel.label.setText("Checking for updates")
+        self.statusLabel.label.setFont(QFont(common.families[0], 40))
+        self.statusLabel.setSizePolicy(
+            QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding
+        )
+        layout.addWidget(self.statusLabel, stretch=1)
+        loading = loaders.UnknownTimeProgressBar(fixed=False)
+        loading.setSizePolicy(
+            QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding
+        )
+        layout.addWidget(loading, stretch=2)
+
+        # Layout finished
+        
 
     def closeEvent(self, event):
         if self.allowClose:
@@ -328,8 +340,10 @@ class Window(QWidget):
 def startApp():
     window = Window()
     window.show()
+    QTimer.singleShot(0, window.start)
     sys.exit(common.app.exec())
 
 
 if __name__ == "__main__":
     startApp()
+

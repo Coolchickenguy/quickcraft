@@ -2,7 +2,8 @@ node_modules
 mapped.json
 reset.sh
 __pycache__
-extradev/jagent/target/
+target/
 dist/
 .venv
 keys/
+.venv12

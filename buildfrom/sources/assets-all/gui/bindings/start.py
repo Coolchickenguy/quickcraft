@@ -1,3 +1,4 @@
+import json
 import os
 from typing import Any, Union
 from .. import common
@@ -29,13 +30,15 @@ class start:
 
             for key in indexed.keys():
                 if indexed[key]["original_name"] == "com.mojang.blaze3d.platform.Window":
-                    resultKey = key
+                    windowClassNameKey = key
                     break
+            config={"windowClassName":windowClassNameKey}
+            configString=json.dumps(config)
             # END
             command = bindings.start(ver=ver,uname=uname,uuid=uuid,just_command=True,access_token=access_token)
             parsed=jcmd2jpype.parseJavaCommand(command[1:])
             parsed["jvm"].append(f"-javaagent:{os.path.join(assets_root,'quickcraft-agent.jar')}")
-            parsed["jvm"].append(f"-DhookedClass={resultKey}")
+            parsed["jvm"].append(f"-Dcom.quickcraft.config={configString}")
             os.chdir(bindings.minecraft_directory)
             if sys.platform == "win32":
                 jdir = os.path.dirname(bindings.locate_java(ver))
@@ -75,7 +78,7 @@ class start:
             cracked()
         self.bdcpmInstance = common.TaskManager.bidirectionalCrossProcessControlManager()
 
-        self.startProcessUuid = common.TaskManager.startTask(multiprocessing.Process(target=self.start),"minecraft",install.qtThreadOrProcessMon)
+        self.startProcessUuid = common.TaskManager.startTask(multiprocessing.Process(target=self.start),"minecraft",common.qtThreadOrProcessMon)
         common.TaskManager.onStart(self.startProcessUuid,lambda uuid: self.bdcpmInstance.handleCalls(gui))
         common.TaskManager.onEnd(self.startProcessUuid,lambda uuid: onMcClose())
 

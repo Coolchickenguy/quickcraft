@@ -1,0 +1,17 @@
+{
+  "name": "Quickcraft Dev",
+  "image": "quickcraft-dev-image",
+  "mounts": ["source=${localWorkspaceFolder},target=/workspace,type=bind"],
+  "workspaceFolder": "/workspace",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-python.python",
+        "redhat.java",
+        "ms-python.black-formatter",
+        "esbenp.prettier-vscode",
+        "njpwerner.autodocstring"
+      ]
+    }
+  }
+}

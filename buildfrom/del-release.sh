@@ -18,8 +18,14 @@ handleVersions() {
     if [ "$checkingVersion" = "$version" ] && [ "$checkingChannel" = "$channel" ]; then
         del_cdn_plat() {
             cdn_url=$(printf "$release" | jq -r ".$1")
+            ls ".$cdn_url" > /dev/null 2>&1
             if [ $? -ne 0 ]; then
                 echo "Could not find $1"
+                return
+            fi
+            if [ "$cdn_url" = "" ]; then
+                echo "Property does not exsist"
+                return
             fi
             rm ".$cdn_url"
         }
