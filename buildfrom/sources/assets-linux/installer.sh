@@ -12,7 +12,7 @@ install_python3() {
     if command -v apt-get > /dev/null 2>&1; then
         # For Debian-based distributions (Ubuntu, Debian, etc.)
         sudo apt-get update
-        sudo apt-get install -y python3 python3-pip python3.10-venv
+        sudo apt-get install -y python3 python3-pip python3-venv
         
     elif command -v dnf > /dev/null 2>&1; then
         # For Red Hat-based distributions (Fedora, CentOS, RHEL)

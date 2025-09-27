@@ -116,6 +116,16 @@
       "macos": "/cdn/abdae2eb57a601b289c1ebf5137adef0.tar.gz",
       "sig_macos": "/cdn/6c2254104c7c002417b8d7c372e544be.tar.gz.sig",
       "channel": "stable"
+    },
+    {
+      "version": "2.6.4",
+      "win": "/cdn/dfde2a22e08dbc5c6433fca0b5a9b1e7.zip",
+      "sig_win": "/cdn/727214511015ce0afabfbb77d8d362a3.sig",
+      "linux": "/cdn/6d844009c42b47c6cc25d08472b5aff2.tar.gz",
+      "sig_linux": "/cdn/90635ad7b802b6227654459626efc6b4.tar.gz.sig",
+      "macos": "/cdn/1fadaae52f07dab0be0bf1e55feae733.tar.gz",
+      "sig_macos": "/cdn/a471963b746d065b373a4ccec4060b70.tar.gz.sig",
+      "channel": "stable"
     }
   ],
   "publishers": {
