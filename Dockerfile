@@ -1,4 +1,4 @@
-FROM openjdk:21-jdk-slim
+FROM eclipse-temurin:21
 
 # Install dependencies
 RUN apt-get update && apt-get install -y curl tar grep sed git python3 python3-pip jq zip \
